@@ -1,0 +1,579 @@
+[gd_scene format=3 uid="uid://b7xfr7l250ll2"]
+
+[ext_resource type="Texture2D" uid="uid://cif2t5ywelqk1" path="res://Images/Characters/character_1.png" id="1_player_tex"]
+[ext_resource type="Texture2D" uid="uid://j81ducd7g8li" path="res://Images/Characters/y_1.png" id="2_enemy_tex"]
+[ext_resource type="Script" uid="uid://bscript001" path="res://Scripts/battle_scene.gd" id="3_battle_scr"]
+
+[node name="BattleScene" type="Node2D"]
+script = ExtResource("3_battle_scr")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.10, 1)
+
+[node name="PreparePhaseUI" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="ColorRect" parent="PreparePhaseUI"]
+offset_right = 1280.0
+offset_bottom = 55.0
+color = Color(0.08, 0.08, 0.18, 1)
+
+[node name="PhaseTitleLabel" type="Label" parent="PreparePhaseUI"]
+offset_right = 1280.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.9, 0.8, 0.2, 1)
+text = "⚔  準備階段  ⚔"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CharacterArea" type="Control" parent="PreparePhaseUI"]
+offset_top = 55.0
+offset_right = 1280.0
+offset_bottom = 370.0
+
+[node name="FloorGrid" type="GridContainer" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 170.0
+offset_top = 245.0
+offset_right = 1110.0
+offset_bottom = 260.0
+theme_override_constants/h_separation = 4
+columns = 16
+
+[node name="Floor_P1" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P2" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P3" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P4" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P5" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P6" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P7" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_P8" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.2, 0.4, 0.8, 0.8)
+
+[node name="Floor_E1" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E2" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E3" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E4" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E5" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E6" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E7" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="Floor_E8" type="ColorRect" parent="PreparePhaseUI/CharacterArea/FloorGrid"]
+custom_minimum_size = Vector2(55, 15)
+color = Color(0.8, 0.3, 0.3, 0.8)
+
+[node name="PlayerSprite" type="TextureRect" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 392.5
+offset_top = 10.0
+offset_right = 592.5
+offset_bottom = 260.0
+texture = ExtResource("1_player_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlayerNameLabel" type="Label" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 372.5
+offset_top = 290.0
+offset_right = 612.5
+offset_bottom = 320.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.4, 0.8, 1.0, 1)
+horizontal_alignment = 1
+text = "Player"
+
+[node name="PlayerHPBar" type="ColorRect" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 392.5
+offset_top = 0.0
+offset_right = 592.5
+offset_bottom = 20.0
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="Fill" type="ColorRect" parent="PreparePhaseUI/CharacterArea/PlayerHPBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.8, 0.3, 1)
+
+[node name="HPLabel" type="Label" parent="PreparePhaseUI/CharacterArea/PlayerHPBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100 / 100"
+
+[node name="EnemySprite" type="TextureRect" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 687.5
+offset_top = 10.0
+offset_right = 887.5
+offset_bottom = 260.0
+texture = ExtResource("2_enemy_tex")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="EnemyNameLabel" type="Label" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 667.5
+offset_top = 290.0
+offset_right = 907.5
+offset_bottom = 320.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
+horizontal_alignment = 1
+text = "Enemy"
+
+[node name="EnemyHPBar" type="ColorRect" parent="PreparePhaseUI/CharacterArea"]
+offset_left = 687.5
+offset_top = 0.0
+offset_right = 887.5
+offset_bottom = 20.0
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="Fill" type="ColorRect" parent="PreparePhaseUI/CharacterArea/EnemyHPBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.9, 0.2, 0.2, 1)
+
+[node name="HPLabel" type="Label" parent="PreparePhaseUI/CharacterArea/EnemyHPBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100 / 100"
+
+[node name="BottomBG" type="ColorRect" parent="PreparePhaseUI"]
+offset_top = 370.0
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.06, 0.06, 0.14, 1)
+
+[node name="HorizontalDivider" type="ColorRect" parent="PreparePhaseUI"]
+offset_top = 370.0
+offset_right = 1280.0
+offset_bottom = 374.0
+color = Color(0.35, 0.35, 0.6, 0.8)
+
+[node name="CenterDivider" type="ColorRect" parent="PreparePhaseUI"]
+offset_left = 636.0
+offset_top = 374.0
+offset_right = 644.0
+offset_bottom = 720.0
+color = Color(0.35, 0.35, 0.6, 0.5)
+
+[node name="PlayerSlotsLabel" type="Label" parent="PreparePhaseUI"]
+offset_left = 0.0
+offset_top = 376.0
+offset_right = 636.0
+offset_bottom = 402.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.4, 0.8, 1.0, 1)
+horizontal_alignment = 1
+text = "Player 行動順序"
+
+[node name="PlayerSlotsGrid" type="GridContainer" parent="PreparePhaseUI"]
+offset_left = 8.0
+offset_top = 404.0
+offset_right = 628.0
+offset_bottom = 466.0
+columns = 8
+
+[node name="Slot_P1" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="Label" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "1"
+
+[node name="Slot_P2" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "2"
+
+[node name="Slot_P3" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "3"
+
+[node name="Slot_P4" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P4"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "4"
+
+[node name="Slot_P5" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P5"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "5"
+
+[node name="Slot_P6" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P6"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "6"
+
+[node name="Slot_P7" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P7"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "7"
+
+[node name="Slot_P8" type="Panel" parent="PreparePhaseUI/PlayerSlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P8"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "8"
+
+[node name="PlayerActionsLabel" type="Label" parent="PreparePhaseUI"]
+offset_left = 0.0
+offset_top = 472.0
+offset_right = 636.0
+offset_bottom = 498.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.4, 0.8, 1.0, 1)
+horizontal_alignment = 1
+text = "Player 行動選擇"
+
+[node name="PlayerActionsGrid" type="GridContainer" parent="PreparePhaseUI"]
+offset_left = 8.0
+offset_top = 500.0
+offset_right = 628.0
+offset_bottom = 558.0
+columns = 6
+
+[node name="Action_P1" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "⚔️  物理攻擊"
+
+[node name="Action_P2" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "🔮  法術攻擊"
+
+[node name="Action_P3" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "💨  移動閃避"
+
+[node name="Action_P4" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "📖  移動詠唱"
+
+[node name="Action_P5" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "🛡️  格檔反擊"
+
+[node name="Action_P6" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "✂️  詠唱斷檔"
+
+[node name="EnemySlotsLabel" type="Label" parent="PreparePhaseUI"]
+offset_left = 644.0
+offset_top = 376.0
+offset_right = 1280.0
+offset_bottom = 402.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
+horizontal_alignment = 1
+text = "Enemy 行動順序"
+
+[node name="EnemySlotsGrid" type="GridContainer" parent="PreparePhaseUI"]
+offset_left = 652.0
+offset_top = 404.0
+offset_right = 1272.0
+offset_bottom = 466.0
+columns = 8
+
+[node name="Slot_E1" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E1"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "1"
+
+[node name="Slot_E2" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "2"
+
+[node name="Slot_E3" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "3"
+
+[node name="Slot_E4" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E4"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "4"
+
+[node name="Slot_E5" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E5"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "5"
+
+[node name="Slot_E6" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E6"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "6"
+
+[node name="Slot_E7" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E7"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "7"
+
+[node name="Slot_E8" type="Panel" parent="PreparePhaseUI/EnemySlotsGrid"]
+custom_minimum_size = Vector2(75, 58)
+
+[node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E8"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "8"
+
+[node name="EnemyActionsLabel" type="Label" parent="PreparePhaseUI"]
+offset_left = 644.0
+offset_top = 472.0
+offset_right = 1280.0
+offset_bottom = 498.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
+horizontal_alignment = 1
+text = "Enemy 行動選擇"
+
+[node name="EnemyActionsGrid" type="GridContainer" parent="PreparePhaseUI"]
+offset_left = 652.0
+offset_top = 500.0
+offset_right = 1272.0
+offset_bottom = 558.0
+columns = 6
+
+[node name="Action_E1" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "⚔️  物理攻擊"
+
+[node name="Action_E2" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "🔮  法術攻擊"
+
+[node name="Action_E3" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "💨  移動閃避"
+
+[node name="Action_E4" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "📖  移動詠唱"
+
+[node name="Action_E5" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "🛡️  格檔反擊"
+
+[node name="Action_E6" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
+custom_minimum_size = Vector2(100, 55)
+theme_override_font_sizes/font_size = 13
+text = "✂️  詠唱斷檔"
+
+[node name="StartBattleButton" type="Button" parent="PreparePhaseUI"]
+offset_left = 490.0
+offset_top = 672.0
+offset_right = 790.0
+offset_bottom = 712.0
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+text = "⚡  開始戰鬥！"
+
+[node name="ReturnButton" type="Button" parent="PreparePhaseUI"]
+offset_left = 20.0
+offset_top = 672.0
+offset_right = 180.0
+offset_bottom = 712.0
+theme_override_font_sizes/font_size = 16
+text = "← 返回地圖"
+
+[node name="FadeOverlay" type="ColorRect" parent="PreparePhaseUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="PreparePhaseUI/StartBattleButton" to="." method="_on_start_battle_pressed"]
+[connection signal="pressed" from="PreparePhaseUI/ReturnButton" to="." method="_on_return_button_pressed"]
+[connection signal="pressed" from="PreparePhaseUI/PlayerActionsGrid/Action_P1" to="." method="_on_player_action_pressed" binds=[0]]
+[connection signal="pressed" from="PreparePhaseUI/PlayerActionsGrid/Action_P2" to="." method="_on_player_action_pressed" binds=[1]]
+[connection signal="pressed" from="PreparePhaseUI/PlayerActionsGrid/Action_P3" to="." method="_on_player_action_pressed" binds=[2]]
+[connection signal="pressed" from="PreparePhaseUI/PlayerActionsGrid/Action_P4" to="." method="_on_player_action_pressed" binds=[3]]
+[connection signal="pressed" from="PreparePhaseUI/PlayerActionsGrid/Action_P5" to="." method="_on_player_action_pressed" binds=[4]]
+[connection signal="pressed" from="PreparePhaseUI/PlayerActionsGrid/Action_P6" to="." method="_on_player_action_pressed" binds=[5]]

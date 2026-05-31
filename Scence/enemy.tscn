@@ -7,6 +7,9 @@
 radius = 100.0
 height = 276.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_hitbox"]
+radius = 120.0
+
 [node name="Enemy" type="CharacterBody2D" unique_id=-1447406262]
 script = ExtResource("2_enemy_scr")
 
@@ -18,3 +21,11 @@ texture = ExtResource("1_enemy_tex")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=552593706]
 position = Vector2(341, 248)
 shape = SubResource("CapsuleShape2D_rmiyv")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=112233445]
+position = Vector2(341, 248)
+
+[node name="HitboxShape" type="CollisionShape2D" parent="Hitbox" unique_id=112233446]
+shape = SubResource("CircleShape2D_hitbox")
+
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]

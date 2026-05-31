@@ -12,11 +12,15 @@ const MOVE_RANGE := 200.0
 ## 判定「抵達目標點」的容許誤差（像素）
 const ARRIVE_THRESHOLD := 5.0
 
+## 戰鬥場景路徑
+const BATTLE_SCENE := "res://Scence/battle_scene.tscn"
+
 enum State { IDLE, MOVING }
 
 var _state: State = State.IDLE
 var _idle_timer := 0.0       # 倒數等待時間
 var _target_pos: Vector2     # 目標位置
+var _battle_triggered := false  # 防止重複觸發
 
 
 func _ready() -> void:
@@ -25,6 +29,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# 已觸發戰鬥時停止所有移動邏輯
+	if _battle_triggered:
+		return
+
 	match _state:
 		State.IDLE:
 			velocity = Vector2.ZERO
@@ -60,3 +68,35 @@ func _start_moving() -> void:
 	var dist  := randf_range(50.0, MOVE_RANGE)
 	_target_pos = global_position + Vector2(cos(angle), sin(angle)) * dist
 	_state = State.MOVING
+
+
+## Hitbox（Area2D）偵測到物體進入時呼叫
+## 確認是 Player 群組後，觸發場景切換
+func _on_hitbox_body_entered(body: Node2D) -> void:
+	if _battle_triggered:
+		return
+	if not body.is_in_group("player"):
+		return
+
+	_battle_triggered = true
+	# 停止 Enemy 移動
+	velocity = Vector2.ZERO
+	set_physics_process(false)
+
+	# 儲存角色圖片資料供戰鬥場景使用
+	var player_sprite = body.get_node_or_null("Sprite2D")
+	if player_sprite and player_sprite.texture:
+		GlobalBattleData.player_texture = player_sprite.texture
+		print("[Enemy] 成功儲存 Player 圖片: ", player_sprite.texture.resource_path)
+	else:
+		print("[Enemy] 找不到 Player Sprite2D 或無 texture")
+	
+	var enemy_sprite = $Sprite2D
+	if enemy_sprite and enemy_sprite.texture:
+		GlobalBattleData.enemy_texture = enemy_sprite.texture
+		print("[Enemy] 成功儲存 Enemy 圖片: ", enemy_sprite.texture.resource_path)
+	else:
+		print("[Enemy] 找不到 Enemy Sprite2D 或無 texture")
+
+	# 延遲到物理幀結束後再切換場景，避免在物理回呼中移除節點
+	get_tree().call_deferred("change_scene_to_file", BATTLE_SCENE)
