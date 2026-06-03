@@ -26,6 +26,14 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# 限制玩家不超出畫面邊界 (需考慮 Sprite 的本地偏移)
+	var screen_size = get_viewport_rect().size
+	var pad = 60.0
+	var offset_x = $Sprite2D.position.x
+	var offset_y = $Sprite2D.position.y
+	global_position.x = clamp(global_position.x, pad - offset_x, screen_size.x - pad - offset_x)
+	global_position.y = clamp(global_position.y, pad - offset_y, screen_size.y - pad - offset_y)
+
 	# 根據水平方向翻轉 Sprite2D
 	# input_dir.x > 0 → 往右（不翻轉）
 	# input_dir.x < 0 → 往左（翻轉）

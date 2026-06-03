@@ -1,20 +1,26 @@
 [gd_scene format=3 uid="uid://by2bm7hkso0v5"]
 
+[ext_resource type="Script" uid="uid://mainscencescript" path="res://Scripts/mainscence.gd" id="1_main_scr"]
 [ext_resource type="PackedScene" uid="uid://x0fqnh3oab0h" path="res://Scence/player.tscn" id="1_qpi58"]
 [ext_resource type="PackedScene" uid="uid://cx6v0kecd6vy7" path="res://Scence/enemy.tscn" id="2_enemy"]
+[ext_resource type="PackedScene" uid="uid://x1y2z3a4b5c6d" path="res://Scence/enemy_2.tscn" id="4_enemy2"]
 [ext_resource type="Texture2D" uid="uid://dve6phf7sgbrq" path="res://Images/Gemini_Generated_Image_662x27662x27662x.png" id="3_46f83"]
 
 [node name="Mainscence" type="Node2D" unique_id=673863620]
+script = ExtResource("1_main_scr")
 
 [node name="Player" parent="." unique_id=1220740923 instance=ExtResource("1_qpi58")]
 up_direction = Vector2(0.9922779, -0.12403474)
 
 [node name="Enemy" parent="." unique_id=1551380358 instance=ExtResource("2_enemy")]
-position = Vector2(400, 300)
+position = Vector2(300, 300)
+
+[node name="Enemy2" parent="." instance=ExtResource("4_enemy2")]
+position = Vector2(800, 400)
 
 [node name="GeminiGeneratedImage662x27662x27662x" type="Sprite2D" parent="." unique_id=1762400857]
 z_index = -3
 z_as_relative = false
-position = Vector2(639.87506, 361.37503)
-scale = Vector2(0.89648426, 0.91829413)
+position = Vector2(960, 540)
+scale = Vector2(1.345, 1.377)
 texture = ExtResource("3_46f83")

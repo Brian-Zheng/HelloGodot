@@ -1,5 +1,9 @@
 extends CharacterBody2D
 
+@export var execution_threshold: int = 20
+@export var execution_speed: int = 30
+@export var base_speed: int = 20
+
 ## 敵人移動速度（像素/秒）
 const SPEED = 150.0
 
@@ -66,7 +70,17 @@ func _start_idle() -> void:
 func _start_moving() -> void:
 	var angle := randf_range(0.0, TAU)
 	var dist  := randf_range(50.0, MOVE_RANGE)
-	_target_pos = global_position + Vector2(cos(angle), sin(angle)) * dist
+	var raw_target = global_position + Vector2(cos(angle), sin(angle)) * dist
+	
+	# 取得畫面大小，並考慮 Sprite 偏移量
+	var screen_size = get_viewport_rect().size
+	var pad = 60.0
+	var offset_x = $Sprite2D.position.x
+	var offset_y = $Sprite2D.position.y
+	
+	_target_pos.x = clamp(raw_target.x, pad - offset_x, screen_size.x - pad - offset_x)
+	_target_pos.y = clamp(raw_target.y, pad - offset_y, screen_size.y - pad - offset_y)
+	
 	_state = State.MOVING
 
 
@@ -87,16 +101,15 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	var player_sprite = body.get_node_or_null("Sprite2D")
 	if player_sprite and player_sprite.texture:
 		GlobalBattleData.player_texture = player_sprite.texture
-		print("[Enemy] 成功儲存 Player 圖片: ", player_sprite.texture.resource_path)
-	else:
-		print("[Enemy] 找不到 Player Sprite2D 或無 texture")
 	
 	var enemy_sprite = $Sprite2D
 	if enemy_sprite and enemy_sprite.texture:
 		GlobalBattleData.enemy_texture = enemy_sprite.texture
-		print("[Enemy] 成功儲存 Enemy 圖片: ", enemy_sprite.texture.resource_path)
-	else:
-		print("[Enemy] 找不到 Enemy Sprite2D 或無 texture")
+		
+	GlobalBattleData.enemy_execution_threshold = execution_threshold
+	GlobalBattleData.enemy_execution_speed = execution_speed
+	GlobalBattleData.enemy_speed = base_speed
+	GlobalBattleData.current_enemy_name = name
 
 	# 延遲到物理幀結束後再切換場景，避免在物理回呼中移除節點
 	get_tree().call_deferred("change_scene_to_file", BATTLE_SCENE)
