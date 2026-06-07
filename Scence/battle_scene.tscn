@@ -23,7 +23,7 @@ color = Color(0.08, 0.08, 0.18, 1)
 [node name="PhaseTitleLabel" type="Label" parent="PreparePhaseUI"]
 offset_right = 1920
 offset_bottom = 82.5
-theme_override_font_sizes/font_size = 39
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(0.9, 0.8, 0.2, 1)
 text = "⚔  準備階段  ⚔"
 horizontal_alignment = 1
@@ -106,7 +106,7 @@ offset_left = 558.75
 offset_top = 435
 offset_right = 918.75
 offset_bottom = 480
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(0.4, 0.8, 1.0, 1)
 horizontal_alignment = 1
 text = "Player"
@@ -141,7 +141,7 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "100 / 100"
@@ -161,7 +161,7 @@ offset_left = 1001.25
 offset_top = 435
 offset_right = 1361.25
 offset_bottom = 480
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
 horizontal_alignment = 1
 text = "Enemy"
@@ -196,7 +196,7 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "100 / 100"
@@ -225,7 +225,7 @@ offset_left = 0
 offset_top = 564
 offset_right = 954
 offset_bottom = 603
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.4, 0.8, 1.0, 1)
 horizontal_alignment = 1
 text = "Player 行動順序"
@@ -247,7 +247,7 @@ anchor_bottom = 1.0
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P1"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "1"
@@ -258,7 +258,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P2"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "2"
@@ -269,7 +269,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P3"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "3"
@@ -280,7 +280,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P4"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "4"
@@ -291,7 +291,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P5"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "5"
@@ -302,7 +302,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P6"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "6"
@@ -313,7 +313,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P7"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "7"
@@ -324,7 +324,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/PlayerSlotsGrid/Slot_P8"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "8"
@@ -338,7 +338,7 @@ offset_bottom = 750
 [node name="Label" type="Label" parent="PreparePhaseUI/PlayerExecutionSlot"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "斬殺條件: 目標血量 <= 50"
@@ -348,7 +348,7 @@ offset_left = 0
 offset_top = 757.5
 offset_right = 954
 offset_bottom = 796.5
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.4, 0.8, 1.0, 1)
 horizontal_alignment = 1
 text = "Player 行動選擇"
@@ -362,32 +362,32 @@ columns = 6
 
 [node name="Action_P1" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "⚔️  攻擊_1"
 
 [node name="Action_P2" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "🔮  攻擊_2"
 
 [node name="Action_P3" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "💨  移動閃避"
 
 [node name="Action_P4" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "📖  移動詠唱"
 
 [node name="Action_P5" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "🛡️  格檔反擊"
 
 [node name="Action_P6" type="Button" parent="PreparePhaseUI/PlayerActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "✂️  詠唱斷檔"
 
 [node name="EnemySlotsLabel" type="Label" parent="PreparePhaseUI"]
@@ -395,7 +395,7 @@ offset_left = 966
 offset_top = 564
 offset_right = 1920
 offset_bottom = 603
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
 horizontal_alignment = 1
 text = "Enemy 行動順序"
@@ -413,7 +413,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E1"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "1"
@@ -424,7 +424,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E2"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "2"
@@ -435,7 +435,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E3"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "3"
@@ -446,7 +446,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E4"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "4"
@@ -457,7 +457,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E5"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "5"
@@ -468,7 +468,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E6"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "6"
@@ -479,7 +479,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E7"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "7"
@@ -490,7 +490,7 @@ custom_minimum_size = Vector2(112.5, 87)
 [node name="SlotLabel" type="Label" parent="PreparePhaseUI/EnemySlotsGrid/Slot_E8"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "8"
@@ -504,7 +504,7 @@ offset_bottom = 750
 [node name="Label" type="Label" parent="PreparePhaseUI/EnemyExecutionSlot"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -515,7 +515,7 @@ offset_left = 966
 offset_top = 757.5
 offset_right = 1920
 offset_bottom = 796.5
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1.0, 0.45, 0.45, 1)
 horizontal_alignment = 1
 text = "Enemy 行動選擇"
@@ -529,32 +529,32 @@ columns = 6
 
 [node name="Action_E1" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "⚔️  攻擊_1"
 
 [node name="Action_E2" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "🔮  攻擊_2"
 
 [node name="Action_E3" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "💨  移動閃避"
 
 [node name="Action_E4" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "📖  移動詠唱"
 
 [node name="Action_E5" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "🛡️  格檔反擊"
 
 [node name="Action_E6" type="Button" parent="PreparePhaseUI/EnemyActionsGrid"]
 custom_minimum_size = Vector2(150, 82.5)
-theme_override_font_sizes/font_size = 19.5
+theme_override_font_sizes/font_size = 24
 text = "✂️  詠唱斷檔"
 
 [node name="StartBattleButton" type="Button" parent="PreparePhaseUI"]
@@ -562,7 +562,7 @@ offset_left = 735
 offset_top = 915
 offset_right = 1185
 offset_bottom = 982.5
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 36
 theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
 text = "⚡  開始攻擊結算"
 
@@ -586,7 +586,7 @@ offset_right = 300
 offset_bottom = -105
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 75
+theme_override_font_sizes/font_size = 64
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "戰鬥成功"
@@ -604,7 +604,7 @@ offset_right = 150
 offset_bottom = 60
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 48
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "獲得獎勵"

@@ -13,3 +13,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			var ui = load("res://Scripts/skill_equip_ui.gd").new()
 			ui.name = "SkillEquipUI"
 			add_child(ui)
+		elif event.keycode == KEY_B:
+			if get_node_or_null("CharacterStatsUI"): return
+			var ui = load("res://Scripts/character_stats_ui.gd").new()
+			ui.name = "CharacterStatsUI"
+			add_child(ui)

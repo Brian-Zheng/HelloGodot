@@ -254,7 +254,7 @@ func _refresh_all_slots() -> void:
 	_refresh_enemy_slots()
 
 func _update_hp_ui() -> void:
-	var p_bar = $PreparePhaseUI.get_node_or_null("PlayerHPBar")
+	var p_bar = $PreparePhaseUI/CharacterArea.get_node_or_null("PlayerHPBar")
 	if p_bar:
 		var p_fill = p_bar.get_node_or_null("Fill")
 		if p_fill: p_fill.anchor_right = float(player_state.hp) / float(player_state.max_hp)

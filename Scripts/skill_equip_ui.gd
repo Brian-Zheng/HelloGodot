@@ -57,7 +57,7 @@ func _build_ui() -> void:
 	msg_label.position.y = 130
 	msg_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	msg_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
-	msg_label.add_theme_font_size_override("font_size", 28)
+	msg_label.add_theme_font_size_override("font_size", 36)
 	add_child(msg_label)
 
 	# 主分割區域
@@ -87,7 +87,7 @@ func _build_ui() -> void:
 	for i in range(6):
 		var slot_btn = Button.new()
 		slot_btn.custom_minimum_size = Vector2(400, 75)
-		slot_btn.add_theme_font_size_override("font_size", 28)
+		slot_btn.add_theme_font_size_override("font_size", 36)
 		slot_btn.button_mask = MOUSE_BUTTON_MASK_RIGHT
 		slot_btn.gui_input.connect(_on_slot_gui_input.bind(i))
 		slots_container.add_child(slot_btn)
@@ -132,7 +132,7 @@ func _build_ui() -> void:
 	btn_save.text = "儲存並關閉"
 	btn_save.position = Vector2(860, 920)
 	btn_save.size = Vector2(200, 60)
-	btn_save.add_theme_font_size_override("font_size", 28)
+	btn_save.add_theme_font_size_override("font_size", 36)
 	btn_save.pressed.connect(_on_save_pressed)
 	add_child(btn_save)
 
@@ -161,7 +161,7 @@ func _refresh_ui() -> void:
 		# 分類標題
 		var cat_label = Label.new()
 		cat_label.text = "【 " + cat + " 】"
-		cat_label.add_theme_font_size_override("font_size", 22)
+		cat_label.add_theme_font_size_override("font_size", 24)
 		cat_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 		skills_container.add_child(cat_label)
 		
@@ -183,7 +183,7 @@ func _refresh_ui() -> void:
 			
 			btn.text = info
 			btn.custom_minimum_size = Vector2(240, 50)
-			btn.add_theme_font_size_override("font_size", 20)
+			btn.add_theme_font_size_override("font_size", 24)
 			btn.button_mask = MOUSE_BUTTON_MASK_RIGHT
 			
 			# 如果這個招式已經裝在身上，稍微反灰標示
@@ -240,3 +240,9 @@ func _on_save_pressed() -> void:
 	DatabaseManager.save_character_skills("player", final_skills)
 	get_tree().paused = false
 	queue_free()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
+			_on_save_pressed()
+			get_viewport().set_input_as_handled()
