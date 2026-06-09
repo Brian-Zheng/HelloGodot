@@ -46,15 +46,26 @@ func _init_database():
 	
 	
 	
+	# Check if character_skills has slot_idx, if not drop it
+	db.query("PRAGMA table_info(character_skills)")
+	var has_slot_idx = false
+	if db.query_result != null:
+		for row in db.query_result:
+			if row.get("name") == "slot_idx":
+				has_slot_idx = true
+				break
+	if not has_slot_idx:
+		db.query("DROP TABLE IF EXISTS character_skills")
+		
 	# Create character_skills table
-	var create_char_skills_table_query = """
+	db.query("""
 		CREATE TABLE IF NOT EXISTS character_skills (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			character_id TEXT,
-			skill_id TEXT
+			character_id TEXT NOT NULL,
+			skill_id TEXT NOT NULL,
+			slot_idx INTEGER NOT NULL,
+			PRIMARY KEY (character_id, slot_idx)
 		);
-	"""
-	db.query(create_char_skills_table_query)
+	""")
 	
 	# Create enemy_action_sequence table (For fixed enemy behaviors)
 	var create_enemy_seq_table_query = """
@@ -66,6 +77,46 @@ func _init_database():
 		);
 	"""
 	db.query(create_enemy_seq_table_query)
+	
+	# Create ui_window_positions table
+	var create_ui_pos_table_query = """
+		CREATE TABLE IF NOT EXISTS ui_window_positions (
+			window_id TEXT PRIMARY KEY,
+			pos_x REAL,
+			pos_y REAL
+		);
+	"""
+	db.query(create_ui_pos_table_query)
+	GlobalBattleData.ui_window_positions = get_ui_window_positions()
+	
+	# Create equipments table
+	var create_equip_table_query = """
+		CREATE TABLE IF NOT EXISTS equipments (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			equip_id TEXT UNIQUE,
+			name TEXT,
+			type TEXT,
+			description TEXT,
+			bonus_hp INTEGER,
+			bonus_mp INTEGER,
+			bonus_attack INTEGER,
+			bonus_defense INTEGER,
+			bonus_agility INTEGER,
+			bonus_mind INTEGER
+		);
+	"""
+	db.query(create_equip_table_query)
+	
+	# Create character_equipments table
+	var create_char_equip_table_query = """
+		CREATE TABLE IF NOT EXISTS character_equipments (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			character_id TEXT,
+			equip_id TEXT,
+			equipped_slot TEXT
+		);
+	"""
+	db.query(create_char_equip_table_query)
 	
 	# Check if default data exists
 	db.query("SELECT COUNT(*) as cnt FROM skills")
@@ -124,28 +175,17 @@ func _insert_default_data():
 	for skill in default_skills:
 		db.insert_row("skills", skill)
 		
-	var default_char_skills = [
-		{"character_id": "player", "skill_id": "phys_attack"},
-		{"character_id": "player", "skill_id": "magic_attack"},
-		{"character_id": "player", "skill_id": "move_dodge"},
-		{"character_id": "player", "skill_id": "move_chant"},
-		{"character_id": "player", "skill_id": "block_counter"},
-		{"character_id": "player", "skill_id": "chant_interrupt"},
-		{"character_id": "enemy", "skill_id": "enemy_rend"},
-		{"character_id": "enemy", "skill_id": "enemy_acid"},
-		{"character_id": "enemy", "skill_id": "move_dodge"},
-		{"character_id": "enemy", "skill_id": "move_chant"},
-		{"character_id": "enemy", "skill_id": "block_counter"},
-		{"character_id": "enemy", "skill_id": "chant_interrupt"},
-		{"character_id": "Enemy2", "skill_id": "enemy_phantom"},
-		{"character_id": "Enemy2", "skill_id": "enemy_thunder"},
-		{"character_id": "Enemy2", "skill_id": "move_dodge"},
-		{"character_id": "Enemy2", "skill_id": "move_chant"},
-		{"character_id": "Enemy2", "skill_id": "block_counter"},
-		{"character_id": "Enemy2", "skill_id": "chant_interrupt"}
+	var character_skills = [
+		{"character_id": "player", "skill_id": "phys_attack", "slot_idx": 0},
+		{"character_id": "player", "skill_id": "magic_attack", "slot_idx": 1},
+		{"character_id": "player", "skill_id": "move_dodge", "slot_idx": 2},
+		{"character_id": "player", "skill_id": "light_shield", "slot_idx": 3},
+		
+		{"character_id": "enemy", "skill_id": "enemy_rend", "slot_idx": 0},
+		{"character_id": "enemy", "skill_id": "enemy_acid", "slot_idx": 1},
+		{"character_id": "enemy", "skill_id": "move_dodge", "slot_idx": 2},
 	]
-	
-	for cs in default_char_skills:
+	for cs in character_skills:
 		db.insert_row("character_skills", cs)
 		
 	var default_enemy_seq = [
@@ -166,6 +206,23 @@ func _insert_default_data():
 	for es in default_enemy_seq:
 		db.insert_row("enemy_action_sequence", es)
 
+	# 寫入預設裝備資料
+	var default_equipments = [
+		{"equip_id": "starter_weapon", "name": "新手鐵劍", "type": "weapon", "description": "一把普通的鐵劍", "bonus_hp": 0, "bonus_mp": 0, "bonus_attack": 15, "bonus_defense": 0, "bonus_agility": 0, "bonus_mind": 0},
+		{"equip_id": "starter_treasure", "name": "混沌珠碎片", "type": "treasure", "description": "散發著微弱的光芒", "bonus_hp": 100, "bonus_mp": 50, "bonus_attack": 5, "bonus_defense": 5, "bonus_agility": 0, "bonus_mind": 20},
+		{"equip_id": "starter_shoes", "name": "踏風草鞋", "type": "shoes", "description": "稍微提升移動速度", "bonus_hp": 0, "bonus_mp": 0, "bonus_attack": 0, "bonus_defense": 0, "bonus_agility": 15, "bonus_mind": 0}
+	]
+	for eq in default_equipments:
+		db.insert_row("equipments", eq)
+		
+	var default_char_equips = [
+		{"character_id": "player", "equip_id": "starter_weapon"},
+		{"character_id": "player", "equip_id": "starter_treasure"},
+		{"character_id": "player", "equip_id": "starter_shoes"}
+	]
+	for ce in default_char_equips:
+		db.insert_row("character_equipments", ce)
+
 func get_skill(skill_id: String) -> Dictionary:
 	if db == null:
 		return {}
@@ -177,12 +234,15 @@ func get_skill(skill_id: String) -> Dictionary:
 
 func get_character_skills(character_id: String) -> Array[String]:
 	var result: Array[String] = []
-	if db == null:
-		return result
-		
-	db.query("SELECT skill_id FROM character_skills WHERE character_id = '" + character_id + "'")
-	for row in db.query_result:
-		result.append(row["skill_id"])
+	result.resize(6)
+	for i in range(6): result[i] = ""
+	
+	if db != null:
+		db.query("SELECT skill_id, slot_idx FROM character_skills WHERE character_id = '" + character_id + "'")
+		for row in db.query_result:
+			var idx = row["slot_idx"]
+			if idx >= 0 and idx < 6:
+				result[idx] = row["skill_id"]
 	return result
 
 func get_all_skills() -> Array[Dictionary]:
@@ -206,9 +266,62 @@ func get_enemy_action_sequence(character_id: String) -> Array[String]:
 	return result
 
 func save_character_skills(character_id: String, skill_ids: Array[String]) -> void:
+	if db == null: return
+	db.query("DELETE FROM character_skills WHERE character_id = '" + character_id + "'")
+	for i in range(skill_ids.size()):
+		var sid = skill_ids[i]
+		if sid != "":
+			db.insert_row("character_skills", {"character_id": character_id, "skill_id": sid, "slot_idx": i})
+
+func get_ui_window_positions() -> Dictionary:
+	var result: Dictionary = {}
+	if db == null:
+		return result
+	
+	db.query("SELECT * FROM ui_window_positions")
+	for row in db.query_result:
+		result[row["window_id"]] = Vector2(row["pos_x"], row["pos_y"])
+	return result
+
+func save_ui_window_position(window_id: String, pos: Vector2) -> void:
 	if db == null:
 		return
 	
-	db.query("DELETE FROM character_skills WHERE character_id = '" + character_id + "'")
-	for sid in skill_ids:
-		db.insert_row("character_skills", {"character_id": character_id, "skill_id": sid})
+	db.query("INSERT OR REPLACE INTO ui_window_positions (window_id, pos_x, pos_y) VALUES ('" + window_id + "', " + str(pos.x) + ", " + str(pos.y) + ")")
+
+func get_all_equipments() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if db == null:
+		return result
+	
+	db.query("SELECT * FROM equipments")
+	for row in db.query_result:
+		result.append(row)
+	return result
+
+func get_character_equipments(character_id: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if db == null:
+		return result
+	
+	# JOIN 兩張表，取得角色擁有的裝備詳細資訊
+	var q = "SELECT ce.id as char_equip_id, ce.equipped_slot, e.* FROM character_equipments ce JOIN equipments e ON ce.equip_id = e.equip_id WHERE ce.character_id = '" + character_id + "'"
+	db.query(q)
+	for row in db.query_result:
+		result.append(row)
+	return result
+
+func equip_item(char_equip_id: int, slot_name: String) -> void:
+	if db == null:
+		return
+	# 如果該格子上已經有裝備，必須先卸下
+	db.query("UPDATE character_equipments SET equipped_slot = NULL WHERE equipped_slot = '" + slot_name + "'")
+	# 穿上新裝備
+	db.query("UPDATE character_equipments SET equipped_slot = '" + slot_name + "' WHERE id = " + str(char_equip_id))
+	GlobalBattleData.emit_signal("equipment_changed")
+
+func unequip_item(char_equip_id: int) -> void:
+	if db == null:
+		return
+	db.query("UPDATE character_equipments SET equipped_slot = NULL WHERE id = " + str(char_equip_id))
+	GlobalBattleData.emit_signal("equipment_changed")

@@ -91,8 +91,14 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 		return
 	if not body.is_in_group("player"):
 		return
+		
+	if "invulnerable" in body and body.invulnerable:
+		return
 
 	_battle_triggered = true
+	
+	GlobalBattleData.last_player_position = body.global_position
+	
 	# 停止 Enemy 移動
 	velocity = Vector2.ZERO
 	set_physics_process(false)

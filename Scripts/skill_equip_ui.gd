@@ -3,198 +3,240 @@ extends CanvasLayer
 var all_skills: Array[Dictionary] = []
 var equipped_skills: Array[String] = []
 
-# UI 參考
+var dragging: bool = false
+var drag_start_mouse: Vector2
+var drag_start_pos: Vector2
+
+var panel: Panel
 var slots_container: VBoxContainer
 var skills_container: VBoxContainer
 var msg_label: Label
-var popup_equip: PopupMenu
 var popup_unequip: PopupMenu
 
-var target_skill_id: String = ""
+var current_tab: String = "攻擊"
 var target_slot_idx: int = -1
 
 func _ready() -> void:
-	# 暫停遊戲，避免背景繼續運作
-	process_mode = Node.PROCESS_MODE_ALWAYS
-	get_tree().paused = true
-	
+	layer = 110
 	_load_data()
 	_build_ui()
 	_refresh_ui()
 
 func _load_data() -> void:
 	all_skills = DatabaseManager.get_all_skills()
-	var current_eq = DatabaseManager.get_character_skills("player")
-	
-	# 初始化 6 格
-	equipped_skills.resize(6)
-	for i in range(6):
-		if i < current_eq.size():
-			equipped_skills[i] = current_eq[i]
-		else:
-			equipped_skills[i] = ""
+	equipped_skills = DatabaseManager.get_character_skills("player")
 
 func _build_ui() -> void:
-	# 背景
-	var bg = ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.85)
-	add_child(bg)
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.size = Vector2(1920, 1080)
+	panel = Panel.new()
+	panel.custom_minimum_size = Vector2(800, 560)
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.12, 0.15, 1.0) # Solid dark background
+	style.corner_radius_top_left = 12
+	style.corner_radius_top_right = 12
+	style.corner_radius_bottom_left = 12
+	style.corner_radius_bottom_right = 12
+	panel.add_theme_stylebox_override("panel", style)
+	add_child(panel)
+	panel.gui_input.connect(_on_panel_gui_input)
 	
-	# 標題
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_top", 20)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 15)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(vbox)
+	
 	var title = Label.new()
-	title.text = "招式配置"
+	title.text = "技能介面"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	title.position.y = 60
-	title.add_theme_font_size_override("font_size", 48)
-	add_child(title)
+	title.add_theme_font_size_override("font_size", 24)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(title)
 	
-	# 訊息提示
 	msg_label = Label.new()
-	msg_label.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	msg_label.position.y = 130
 	msg_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	msg_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
-	msg_label.add_theme_font_size_override("font_size", 36)
-	add_child(msg_label)
-
-	# 主分割區域
-	var hbox = HBoxContainer.new()
-	hbox.position = Vector2(200, 220)
-	hbox.size = Vector2(1520, 620)
-	hbox.custom_minimum_size = Vector2(1520, 620)
-	hbox.add_theme_constant_override("separation", 80)
-	add_child(hbox)
+	msg_label.add_theme_color_override("font_color", Color(1, 0.4, 0.4))
+	vbox.add_child(msg_label)
 	
-	# 左側：已裝備的 6 格
+	var hbox = HBoxContainer.new()
+	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hbox.add_theme_constant_override("separation", 30)
+	vbox.add_child(hbox)
+	
+	# 左側 (已裝備)
 	var left_vbox = VBoxContainer.new()
-	left_vbox.custom_minimum_size = Vector2(400, 0)
-	left_vbox.add_theme_constant_override("separation", 20)
+	left_vbox.custom_minimum_size = Vector2(300, 0)
+	left_vbox.add_theme_constant_override("separation", 10)
 	hbox.add_child(left_vbox)
 	
 	var left_title = Label.new()
-	left_title.text = "已配置招式 (右鍵卸下)"
-	left_title.add_theme_font_size_override("font_size", 24)
+	left_title.text = "已裝備技能 (右鍵卸下)"
+	left_title.add_theme_font_size_override("font_size", 18)
 	left_title.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
 	left_vbox.add_child(left_title)
 	
 	slots_container = VBoxContainer.new()
-	slots_container.add_theme_constant_override("separation", 10)
+	slots_container.add_theme_constant_override("separation", 8)
 	left_vbox.add_child(slots_container)
 	
 	for i in range(6):
 		var slot_btn = Button.new()
-		slot_btn.custom_minimum_size = Vector2(400, 75)
-		slot_btn.add_theme_font_size_override("font_size", 36)
+		slot_btn.set_script(load("res://Scripts/skill_droppable_slot.gd"))
+		slot_btn.slot_idx = i
+		slot_btn.main_ui = self
+		slot_btn.custom_minimum_size = Vector2(300, 50)
+		slot_btn.add_theme_font_size_override("font_size", 20)
 		slot_btn.button_mask = MOUSE_BUTTON_MASK_RIGHT
 		slot_btn.gui_input.connect(_on_slot_gui_input.bind(i))
 		slots_container.add_child(slot_btn)
 		
-	# 右側：技能庫 (帶捲動)
+	# 右側 (技能庫)
 	var right_vbox = VBoxContainer.new()
 	right_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	right_vbox.add_theme_constant_override("separation", 15)
+	right_vbox.add_theme_constant_override("separation", 10)
 	hbox.add_child(right_vbox)
 	
-	var right_title = Label.new()
-	right_title.text = "招式總覽 (右鍵裝備)"
-	right_title.add_theme_font_size_override("font_size", 24)
-	right_title.add_theme_color_override("font_color", Color(1.0, 0.8, 0.6))
-	right_vbox.add_child(right_title)
+	var tabs_hbox = HBoxContainer.new()
+	tabs_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	tabs_hbox.add_theme_constant_override("separation", 10)
+	right_vbox.add_child(tabs_hbox)
 	
+	var categories = ["攻擊", "閃避", "格檔", "斷檔", "移動", "效果"]
+	for cat in categories:
+		var btn = Button.new()
+		btn.text = cat
+		btn.add_theme_font_size_override("font_size", 16)
+		btn.custom_minimum_size = Vector2(60, 35)
+		btn.pressed.connect(_on_tab_pressed.bind(cat))
+		tabs_hbox.add_child(btn)
+		
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.custom_minimum_size = Vector2(0, 580)
 	right_vbox.add_child(scroll)
 	
 	skills_container = VBoxContainer.new()
 	skills_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	skills_container.add_theme_constant_override("separation", 20)
+	skills_container.add_theme_constant_override("separation", 8)
 	scroll.add_child(skills_container)
 	
-	# 右鍵選單
-	popup_equip = PopupMenu.new()
-	popup_equip.add_theme_font_size_override("font_size", 24)
-	popup_equip.add_item("裝備", 0)
-	popup_equip.id_pressed.connect(_on_popup_equip_pressed)
-	add_child(popup_equip)
-	
 	popup_unequip = PopupMenu.new()
-	popup_unequip.add_theme_font_size_override("font_size", 24)
+	popup_unequip.add_theme_font_size_override("font_size", 18)
 	popup_unequip.add_item("卸下", 0)
 	popup_unequip.id_pressed.connect(_on_popup_unequip_pressed)
 	add_child(popup_unequip)
+
+	if GlobalBattleData.ui_window_positions.has("SkillUI"):
+		panel.position = GlobalBattleData.ui_window_positions["SkillUI"]
+
+func _get_skill_tooltip(skill_id: String) -> String:
+	if skill_id == "": return ""
+	var s = DatabaseManager.get_skill(skill_id)
+	if not s: return ""
 	
-	# 底部儲存按鈕
-	var btn_save = Button.new()
-	btn_save.text = "儲存並關閉"
-	btn_save.position = Vector2(860, 920)
-	btn_save.size = Vector2(200, 60)
-	btn_save.add_theme_font_size_override("font_size", 36)
-	btn_save.pressed.connect(_on_save_pressed)
-	add_child(btn_save)
+	var txt = "[" + s["name"] + "]\n"
+	txt += "分類: " + s.get("category", "未知") + "\n"
+	
+	var dmg = s.get("damage", 0)
+	if dmg > 0:
+		var type = s.get("type", "")
+		if type == "phys_attack" or type == "magic_attack":
+			txt += "造成 " + str(dmg * 10) + "% 攻擊力傷害\n"
+		else:
+			txt += "固定傷害: " + str(dmg) + "\n"
+			
+	var chant = s.get("chant_turns", 0)
+	if chant > 0:
+		txt += "詠唱回合: " + str(chant) + "\n"
+		
+	var range_limit = s.get("range_limit", 0)
+	if range_limit > 0:
+		txt += "射程範圍: " + str(range_limit) + "\n"
+		
+	txt += "----------------\n"
+	
+	var has_effect = false
+	if s.get("is_block", 0) == 1:
+		txt += "格檔效果: 減免 " + str(int(s.get("block_ratio", 0.0)*100)) + "% 傷害\n"
+		has_effect = true
+	if s.get("is_interrupt", 0) == 1:
+		txt += "具備斷檔能力\n"
+		has_effect = true
+	if s.get("grant_damage_boost", 0) > 0:
+		txt += "賦予增傷: " + str(s["grant_damage_boost"]) + "\n"
+		has_effect = true
+	if s.get("grant_crit_rate", 0.0) > 0:
+		txt += "增加暴擊機率: " + str(int(s["grant_crit_rate"]*100)) + "%\n"
+		has_effect = true
+	if s.get("grant_dodge_rate", 0.0) > 0:
+		txt += "增加閃避機率: " + str(int(s["grant_dodge_rate"]*100)) + "%\n"
+		has_effect = true
+	
+	if not has_effect and dmg == 0 and chant == 0:
+		txt += "無特殊數值加成\n"
+	
+	return txt
 
 func _refresh_ui() -> void:
-	# 1. 刷新左側 6 格
 	for i in range(6):
-		var btn = slots_container.get_child(i) as Button
+		var btn = slots_container.get_child(i)
 		var sid = equipped_skills[i]
+		btn.skill_id = sid
 		if sid == "":
 			btn.text = "格 " + str(i+1) + " :  (空)"
 			btn.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+			btn.tooltip_text = ""
 		else:
 			var skill_data = DatabaseManager.get_skill(sid)
 			btn.text = "格 " + str(i+1) + " :  " + (skill_data["name"] if skill_data else sid)
 			btn.add_theme_color_override("font_color", Color(1, 1, 1))
+			btn.tooltip_text = _get_skill_tooltip(sid)
 			
-	# 2. 刷新右側分類技能庫
 	for child in skills_container.get_children():
 		child.queue_free()
 		
-	var categories = ["攻擊", "閃避", "格檔", "斷檔", "移動", "效果"]
-	for cat in categories:
-		var cat_skills = all_skills.filter(func(s): return s.get("category", "") == cat)
-		if cat_skills.size() == 0: continue
+	var cat_skills = all_skills.filter(func(s): return s.get("category", "") == current_tab)
+	
+	for s in cat_skills:
+		var btn = Button.new()
+		btn.set_script(load("res://Scripts/skill_draggable_button.gd"))
+		btn.skill_id = s["skill_id"]
 		
-		# 分類標題
-		var cat_label = Label.new()
-		cat_label.text = "【 " + cat + " 】"
-		cat_label.add_theme_font_size_override("font_size", 24)
-		cat_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
-		skills_container.add_child(cat_label)
+		var dmg = s.get("damage", 0)
+		var chant = s.get("chant_turns", 0)
+		var info = s["name"]
+		var type = s.get("type", "")
+		if dmg > 0:
+			if type == "phys_attack" or type == "magic_attack":
+				info += " (傷:" + str(dmg * 10) + "%)"
+			else:
+				info += " (傷:" + str(dmg) + ")"
+		if chant > 0: info += " (詠:" + str(chant) + ")"
 		
-		# 該分類下的招式按鈕網格
-		var grid = GridContainer.new()
-		grid.columns = 3
-		grid.add_theme_constant_override("h_separation", 15)
-		grid.add_theme_constant_override("v_separation", 15)
-		skills_container.add_child(grid)
+		btn.text = info
+		btn.custom_minimum_size = Vector2(0, 45)
+		btn.add_theme_font_size_override("font_size", 18)
+		btn.button_mask = MOUSE_BUTTON_MASK_RIGHT
 		
-		for s in cat_skills:
-			var btn = Button.new()
-			# 顯示名稱與關鍵數值
-			var dmg = s.get("damage", 0)
-			var chant = s.get("chant_turns", 0)
-			var info = s["name"]
-			if dmg > 0: info += " (傷:" + str(dmg) + ")"
-			if chant > 0: info += " (詠:" + str(chant) + ")"
+		if equipped_skills.has(s["skill_id"]):
+			btn.add_theme_color_override("font_color", Color(0.4, 0.8, 0.4))
+			btn.text += " [已裝備]"
 			
-			btn.text = info
-			btn.custom_minimum_size = Vector2(240, 50)
-			btn.add_theme_font_size_override("font_size", 24)
-			btn.button_mask = MOUSE_BUTTON_MASK_RIGHT
-			
-			# 如果這個招式已經裝在身上，稍微反灰標示
-			if equipped_skills.has(s["skill_id"]):
-				btn.add_theme_color_override("font_color", Color(0.4, 0.8, 0.4))
-				btn.text += " [已裝備]"
-				
-			btn.gui_input.connect(_on_skill_list_gui_input.bind(s["skill_id"]))
-			grid.add_child(btn)
+		btn.tooltip_text = _get_skill_tooltip(s["skill_id"])
+		btn.gui_input.connect(_on_skill_list_gui_input.bind(s["skill_id"]))
+		skills_container.add_child(btn)
 
-# --- 互動邏輯 ---
+func _on_tab_pressed(tab_name: String) -> void:
+	current_tab = tab_name
+	_refresh_ui()
 
 func _on_slot_gui_input(event: InputEvent, slot_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
@@ -204,45 +246,53 @@ func _on_slot_gui_input(event: InputEvent, slot_idx: int) -> void:
 			popup_unequip.popup()
 
 func _on_skill_list_gui_input(event: InputEvent, skill_id: String) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-		# 只有沒被裝備的才能按右鍵裝備 (看您的需求，這裡先不鎖死，讓玩家可以重複裝備同一招)
-		target_skill_id = skill_id
-		popup_equip.position = get_viewport().get_mouse_position()
-		popup_equip.popup()
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		msg_label.text = "請直接「按住並拖曳」技能到左側格子上來裝備！"
 
-func _on_popup_equip_pressed(id: int) -> void:
+func _handle_skill_drop(data: Dictionary, target_slot_idx: int) -> void:
 	msg_label.text = ""
-	var empty_idx = -1
-	for i in range(6):
-		if equipped_skills[i] == "":
-			empty_idx = i
-			break
-	
-	if empty_idx == -1:
-		msg_label.text = "裝備欄已滿！請先在左側對著技能按右鍵卸下。"
-	else:
-		equipped_skills[empty_idx] = target_skill_id
-		_refresh_ui()
+	if data.source == "library":
+		equipped_skills[target_slot_idx] = data.skill_id
+	elif data.source == "slot":
+		var source_idx = data.slot_idx
+		var temp = equipped_skills[target_slot_idx]
+		equipped_skills[target_slot_idx] = equipped_skills[source_idx]
+		equipped_skills[source_idx] = temp
+		
+	DatabaseManager.save_character_skills("player", equipped_skills)
+	_refresh_ui()
 
 func _on_popup_unequip_pressed(id: int) -> void:
 	msg_label.text = ""
 	if target_slot_idx != -1:
 		equipped_skills[target_slot_idx] = ""
+		DatabaseManager.save_character_skills("player", equipped_skills)
 		_refresh_ui()
 
-func _on_save_pressed() -> void:
-	# 收集非空的招式寫入資料庫
-	var final_skills: Array[String] = []
-	for sid in equipped_skills:
-		if sid != "":
-			final_skills.append(sid)
-			
-	DatabaseManager.save_character_skills("player", final_skills)
-	get_tree().paused = false
+func _exit_tree() -> void:
+	if panel:
+		GlobalBattleData.ui_window_positions["SkillUI"] = panel.position
+		DatabaseManager.save_ui_window_position("SkillUI", panel.position)
+		
+	DatabaseManager.save_character_skills("player", equipped_skills)
+
+func _close() -> void:
 	queue_free()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE:
-			_on_save_pressed()
+		if event.keycode == KEY_ESCAPE or event.keycode == KEY_K:
+			_close()
 			get_viewport().set_input_as_handled()
+
+func _on_panel_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			dragging = true
+			drag_start_mouse = panel.get_global_mouse_position()
+			drag_start_pos = panel.position
+		else:
+			dragging = false
+	elif event is InputEventMouseMotion and dragging:
+		var current_mouse = panel.get_global_mouse_position()
+		panel.position = drag_start_pos + (current_mouse - drag_start_mouse)

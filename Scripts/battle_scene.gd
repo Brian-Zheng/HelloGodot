@@ -44,6 +44,8 @@ var player_slots: Array[int] = [-1, -1, -1, -1, -1, -1, -1, -1]
 var enemy_slots: Array[int] = [-1, -1, -1, -1, -1, -1, -1, -1]
 var player_slot_skills: Array[String] = ["", "", "", "", "", "", "", ""]
 var enemy_slot_skills: Array[String] = ["", "", "", "", "", "", "", ""]
+var player_slot_groups: Array[int] = [-1, -1, -1, -1, -1, -1, -1, -1]
+var enemy_slot_groups: Array[int] = [-1, -1, -1, -1, -1, -1, -1, -1]
 
 var player_equipped_skills: Array[String] = []
 var enemy_equipped_skills: Array[String] = []
@@ -55,10 +57,21 @@ var player_current_slot: int = 0
 var player_slot_panels: Array[Panel] = []
 var enemy_slot_panels: Array[Panel] = []
 var player_action_buttons: Array[Button] = []
+var _hp_warning_tween: Tween
+var is_battling: bool = false
+
 
 func _ready() -> void:
 	player_state = BattleEntity.new(4)
+	var p_stats = GlobalBattleData.get_player_stats()
+	GlobalBattleData.init_current_stats_if_needed()
+	player_state.max_hp = p_stats["total_hp"]
+	player_state.hp = GlobalBattleData.current_hp
+	
 	enemy_state = BattleEntity.new(7)
+	var e_stats = GlobalBattleData.get_enemy_stats()
+	enemy_state.max_hp = e_stats["total_hp"]
+	enemy_state.hp = e_stats["total_hp"]
 	
 	_cache_nodes()
 	_load_character_skills()
@@ -84,11 +97,16 @@ func _ready() -> void:
 func _cache_nodes() -> void:
 	var p_slots_root = $PreparePhaseUI.get_node_or_null("PlayerSlotsGrid")
 	if p_slots_root:
+		p_slots_root.add_theme_constant_override("h_separation", 0)
 		for i in range(1, 9):
-			player_slot_panels.append(p_slots_root.get_node("Slot_P%d" % i) as Panel)
+			var panel = p_slots_root.get_node("Slot_P%d" % i) as Panel
+			panel.mouse_filter = Control.MOUSE_FILTER_STOP
+			panel.gui_input.connect(_on_player_slot_gui_input.bind(i - 1))
+			player_slot_panels.append(panel)
 
 	var e_slots_root = $PreparePhaseUI.get_node_or_null("EnemySlotsGrid")
 	if e_slots_root:
+		e_slots_root.add_theme_constant_override("h_separation", 0)
 		for i in range(1, 9):
 			enemy_slot_panels.append(e_slots_root.get_node("Slot_E%d" % i) as Panel)
 
@@ -96,7 +114,9 @@ func _cache_nodes() -> void:
 	if p_actions_root:
 		var action_names_btn := ["Action_P1","Action_P2","Action_P3","Action_P4","Action_P5","Action_P6"]
 		for n in action_names_btn:
-			player_action_buttons.append(p_actions_root.get_node(n) as Button)
+			var btn = p_actions_root.get_node(n) as Button
+			btn.set_script(load("res://Scripts/skill_tooltip_button.gd"))
+			player_action_buttons.append(btn)
 
 func _load_character_skills() -> void:
 	player_equipped_skills = DatabaseManager.get_character_skills("player")
@@ -110,14 +130,64 @@ func _load_character_skills() -> void:
 	
 	for i in range(player_action_buttons.size()):
 		var btn = player_action_buttons[i]
-		if i < player_equipped_skills.size():
+		if i < player_equipped_skills.size() and player_equipped_skills[i] != "":
 			var skill_id = player_equipped_skills[i]
 			var skill_data = DatabaseManager.get_skill(skill_id)
 			btn.text = skill_data["name"] if skill_data else skill_id
 			btn.disabled = false
+			btn.tooltip_text = _get_skill_tooltip(skill_id)
 		else:
 			btn.text = "（無）"
 			btn.disabled = true
+			btn.tooltip_text = ""
+
+func _get_skill_tooltip(skill_id: String) -> String:
+	if skill_id == "": return ""
+	var s = DatabaseManager.get_skill(skill_id)
+	if not s: return ""
+	
+	var txt = "[" + s["name"] + "]\n"
+	txt += "分類: " + s.get("category", "未知") + "\n"
+	
+	var dmg = s.get("damage", 0)
+	if dmg > 0:
+		var type = s.get("type", "")
+		if type == "phys_attack" or type == "magic_attack":
+			txt += "造成 " + str(dmg * 10) + "% 攻擊力傷害\n"
+		else:
+			txt += "固定傷害: " + str(dmg) + "\n"
+			
+	var chant = s.get("chant_turns", 0)
+	if chant > 0:
+		txt += "詠唱回合: " + str(chant) + "\n"
+		
+	var range_limit = s.get("range_limit", 0)
+	if range_limit > 0:
+		txt += "射程範圍: " + str(range_limit) + "\n"
+		
+	txt += "----------------\n"
+	
+	var has_effect = false
+	if s.get("is_block", 0) == 1:
+		txt += "格檔效果: 減免 " + str(int(s.get("block_ratio", 0.0)*100)) + "% 傷害\n"
+		has_effect = true
+	if s.get("is_interrupt", 0) == 1:
+		txt += "具備斷檔能力\n"
+		has_effect = true
+	if s.get("grant_damage_boost", 0) > 0:
+		txt += "賦予增傷: " + str(s["grant_damage_boost"]) + "\n"
+		has_effect = true
+	if s.get("grant_crit_rate", 0.0) > 0:
+		txt += "增加暴擊機率: " + str(int(s["grant_crit_rate"]*100)) + "%\n"
+		has_effect = true
+	if s.get("grant_dodge_rate", 0.0) > 0:
+		txt += "增加閃避機率: " + str(int(s["grant_dodge_rate"]*100)) + "%\n"
+		has_effect = true
+	
+	if not has_effect and dmg == 0 and chant == 0:
+		txt += "無特殊數值加成\n"
+	
+	return txt
 
 func _get_sub_actions_for(skill_id: String, is_player: bool) -> Array[int]:
 	var result: Array[int] = []
@@ -145,6 +215,7 @@ func _get_sub_actions_for(skill_id: String, is_player: bool) -> Array[int]:
 func _setup_enemy_actions_ai() -> void:
 	enemy_setup_chant_reduction = 0
 	var current_slot = 0
+	var group_id = 0
 	
 	var enemy_id = GlobalBattleData.current_enemy_name
 	if enemy_id == "": enemy_id = "enemy"
@@ -163,12 +234,16 @@ func _setup_enemy_actions_ai() -> void:
 		for sa in sub_actions:
 			enemy_slot_skills[current_slot] = skill_id
 			enemy_slots[current_slot] = sa
+			enemy_slot_groups[current_slot] = group_id
 			current_slot += 1
+		group_id += 1
 			
 	while current_slot < 8:
 		enemy_slot_skills[current_slot] = "move_dodge"
 		enemy_slots[current_slot] = SubAction.EXECUTE
+		enemy_slot_groups[current_slot] = group_id
 		current_slot += 1
+		group_id += 1
 
 func _play_fade_in() -> void:
 	var overlay = $PreparePhaseUI.get_node_or_null("FadeOverlay") as ColorRect
@@ -193,9 +268,14 @@ func _on_player_action_pressed(action_idx: int) -> void:
 		print("[BattleScene] 剩餘行動格不足！")
 		return
 		
+	var group_id = 0
+	if player_current_slot > 0:
+		group_id = player_slot_groups[player_current_slot - 1] + 1
+		
 	for sa in sub_actions:
 		player_slot_skills[player_current_slot] = skill_id
 		player_slots[player_current_slot] = sa
+		player_slot_groups[player_current_slot] = group_id
 		_refresh_player_slot(player_current_slot)
 		player_current_slot += 1
 		
@@ -203,7 +283,54 @@ func _on_player_action_pressed(action_idx: int) -> void:
 	if player_current_slot >= 8:
 		_set_player_buttons_enabled(false)
 
-func _get_action_display_info(action: int, skill_id: String) -> Dictionary:
+func _on_player_slot_gui_input(event: InputEvent, slot_idx: int) -> void:
+	if is_battling: return
+	if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
+		var gid = player_slot_groups[slot_idx]
+		if gid != -1:
+			_remove_player_action_group(gid)
+
+func _remove_player_action_group(target_gid: int) -> void:
+	var skill_sequence: Array[String] = []
+	var current_gid = -1
+	for i in range(8):
+		var g = player_slot_groups[i]
+		if g != -1 and g != target_gid:
+			if g != current_gid:
+				skill_sequence.append(player_slot_skills[i])
+				current_gid = g
+				
+	for i in range(8):
+		player_slots[i] = SubAction.NONE
+		player_slot_skills[i] = ""
+		player_slot_groups[i] = -1
+	player_current_slot = 0
+	player_setup_chant_reduction = 0
+	
+	for skill_id in skill_sequence:
+		var sub_actions = _get_sub_actions_for(skill_id, true)
+		if player_current_slot + sub_actions.size() > 8:
+			print("[BattleScene] 重新計算時行動格不足，捨棄後續技能")
+			break
+			
+		var group_id = 0
+		if player_current_slot > 0:
+			group_id = player_slot_groups[player_current_slot - 1] + 1
+			
+		for sa in sub_actions:
+			player_slot_skills[player_current_slot] = skill_id
+			player_slots[player_current_slot] = sa
+			player_slot_groups[player_current_slot] = group_id
+			player_current_slot += 1
+			
+	_set_player_buttons_enabled(true)
+	var start_btn = $PreparePhaseUI.get_node_or_null("StartBattleButton")
+	if start_btn: start_btn.disabled = false
+	
+	_refresh_all_slots()
+	_highlight_current_slot()
+
+func _get_action_display_info(action: int, skill_id: String, phase_text: String = "") -> Dictionary:
 	if action == SubAction.STUNNED:
 		return {"icon": "😵", "name": "被打斷", "color": Color(0.5, 0.5, 0.5)}
 		
@@ -212,7 +339,7 @@ func _get_action_display_info(action: int, skill_id: String) -> Dictionary:
 	var sname = skill_data.get("name", skill_id) if skill_data else skill_id
 	
 	if action == SubAction.CHANT:
-		return {"icon": "⏳", "name": sname + "\n(詠唱)", "color": Color(0.8, 0.8, 0.8)}
+		return {"icon": "⏳", "name": sname + "\n" + phase_text, "color": Color(0.8, 0.8, 0.8)}
 		
 	var color = Color(1, 1, 1)
 	var icon = "⚪"
@@ -234,6 +361,25 @@ func _get_action_display_info(action: int, skill_id: String) -> Dictionary:
 		
 	return {"icon": icon, "name": sname, "color": color}
 
+func _get_phase_text(idx: int, is_player: bool) -> String:
+	var groups = player_slot_groups if is_player else enemy_slot_groups
+	var actions = player_slots if is_player else enemy_slots
+	var gid = groups[idx]
+	if gid == -1: return ""
+	
+	var total = 0
+	var current = 0
+	for i in range(8):
+		if groups[i] == gid and actions[i] == SubAction.CHANT:
+			total += 1
+			if i <= idx: current += 1
+			
+	if actions[idx] == SubAction.CHANT:
+		return "(詠唱 %d/%d)" % [current, total]
+	elif actions[idx] == SubAction.EXECUTE:
+		return "(發動)"
+	return ""
+
 func _refresh_player_slot(idx: int) -> void:
 	if idx < 0 or idx >= 8 or idx >= player_slot_panels.size(): return
 	var panel := player_slot_panels[idx]
@@ -244,8 +390,12 @@ func _refresh_player_slot(idx: int) -> void:
 		label.text = str(idx + 1)
 		label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
 	else:
-		var info = _get_action_display_info(action, player_slot_skills[idx])
-		label.text = "%s\n%s" % [info.icon, info.name]
+		var phase = _get_phase_text(idx, true)
+		var info = _get_action_display_info(action, player_slot_skills[idx], phase)
+		if action == SubAction.EXECUTE:
+			label.text = "%s\n%s\n%s" % [info.icon, info.name, phase]
+		else:
+			label.text = "%s\n%s" % [info.icon, info.name]
 		label.add_theme_color_override("font_color", info.color)
 
 func _refresh_all_slots() -> void:
@@ -279,36 +429,71 @@ func _refresh_enemy_slots() -> void:
 			label.text = str(i + 1)
 			label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
 		else:
-			var info = _get_action_display_info(action, enemy_slot_skills[i])
-			label.text = "%s\n%s" % [info.icon, info.name]
+			var phase = _get_phase_text(i, false)
+			var info = _get_action_display_info(action, enemy_slot_skills[i], phase)
+			if action == SubAction.EXECUTE:
+				label.text = "%s\n%s\n%s" % [info.icon, info.name, phase]
+			else:
+				label.text = "%s\n%s" % [info.icon, info.name]
 			label.add_theme_color_override("font_color", info.color)
 
 func _highlight_current_slot() -> void:
 	for i in range(8):
 		if i >= player_slot_panels.size(): break
 		var panel := player_slot_panels[i]
+		var gid = player_slot_groups[i]
+		
+		var is_first_in_bar = (i == 0)
+		var is_last_in_bar = (i == 7)
+		var is_first_in_group = true
+		if i > 0 and gid != -1 and player_slot_groups[i-1] == gid:
+			is_first_in_group = false
+		
 		if i == player_current_slot:
-			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.3, 0.8, 1.0, 0.9), true))
+			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.4, 0.9, 1.0, 1.0), true, is_first_in_bar, is_last_in_bar, is_first_in_group))
 		elif player_slots[i] != SubAction.NONE:
-			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.2, 0.6, 0.8, 0.5), false))
+			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.3, 0.6, 0.9, 1.0), false, is_first_in_bar, is_last_in_bar, is_first_in_group))
 		else:
-			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.25, 0.25, 0.35, 1.0), false))
+			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.3, 0.3, 0.4, 1.0), false, is_first_in_bar, is_last_in_bar, is_first_in_group))
 
 	for i in range(8):
 		if i >= enemy_slot_panels.size(): break
 		var panel := enemy_slot_panels[i]
+		var gid = enemy_slot_groups[i]
+		
+		var is_first_in_bar = (i == 0)
+		var is_last_in_bar = (i == 7)
+		var is_first_in_group = true
+		if i > 0 and gid != -1 and enemy_slot_groups[i-1] == gid:
+			is_first_in_group = false
+		
 		if enemy_slots[i] != SubAction.NONE:
-			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.8, 0.3, 0.3, 0.5), false))
+			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.8, 0.3, 0.3, 1.0), false, is_first_in_bar, is_last_in_bar, is_first_in_group))
 		else:
-			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.25, 0.25, 0.35, 1.0), false))
+			panel.add_theme_stylebox_override("panel", _make_slot_style(Color(0.3, 0.3, 0.4, 1.0), false, is_first_in_bar, is_last_in_bar, is_first_in_group))
+			
+	_predict_execution_warning()
 
 func _highlight_resolving_slot(idx: int) -> void:
 	_highlight_current_slot()
 	if idx < 8:
 		if idx < player_slot_panels.size():
-			player_slot_panels[idx].add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true))
+			var gid = player_slot_groups[idx]
+			var is_first_in_bar = (idx == 0)
+			var is_last_in_bar = (idx == 7)
+			var is_first_in_group = true
+			if idx > 0 and gid != -1 and player_slot_groups[idx-1] == gid:
+				is_first_in_group = false
+			player_slot_panels[idx].add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true, is_first_in_bar, is_last_in_bar, is_first_in_group))
+			
 		if idx < enemy_slot_panels.size():
-			enemy_slot_panels[idx].add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true))
+			var gid = enemy_slot_groups[idx]
+			var is_first_in_bar = (idx == 0)
+			var is_last_in_bar = (idx == 7)
+			var is_first_in_group = true
+			if idx > 0 and gid != -1 and enemy_slot_groups[idx-1] == gid:
+				is_first_in_group = false
+			enemy_slot_panels[idx].add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true, is_first_in_bar, is_last_in_bar, is_first_in_group))
 
 func _highlight_execution_slots(active: bool) -> void:
 	var p_exec_slot = $PreparePhaseUI.get_node_or_null("PlayerExecutionSlot")
@@ -316,24 +501,89 @@ func _highlight_execution_slots(active: bool) -> void:
 	if not p_exec_slot or not e_exec_slot: return
 	
 	if active:
-		p_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true))
-		e_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true))
+		p_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true, true, true, true))
+		e_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(1.0, 0.8, 0.2, 1.0), true, true, true, true))
 	else:
-		p_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(0.25, 0.25, 0.35, 1.0), false))
-		e_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(0.25, 0.25, 0.35, 1.0), false))
+		p_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(0.3, 0.3, 0.4, 1.0), false, true, true, true))
+		e_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(0.3, 0.3, 0.4, 1.0), false, true, true, true))
 
-func _make_slot_style(border_color: Color, is_active: bool) -> StyleBoxFlat:
+func _make_warning_style() -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.3, 0.1, 0.1, 1.0)
+	style.border_color = Color(1.0, 0.2, 0.2, 1.0)
+	style.border_width_left = 3
+	style.border_width_right = 3
+	style.border_width_top = 3
+	style.border_width_bottom = 3
+	return style
+
+func _predict_execution_warning() -> void:
+	var total_predicted_dmg = 0
+	var enemy_stats = GlobalBattleData.get_enemy_stats()
+	var atk_stat = enemy_stats.get("total_atk", 0)
+	
+	for i in range(8):
+		if enemy_slots[i] == SubAction.EXECUTE:
+			var skill_id = enemy_slot_skills[i]
+			var skill_data = DatabaseManager.get_skill(skill_id)
+			if skill_data:
+				var type = skill_data.get("type", "phys_attack")
+				var base_dmg = skill_data.get("damage", 0)
+				var final_base_dmg = 0
+				if type == "phys_attack" or type == "magic_attack":
+					var percentage = base_dmg * 10.0 / 100.0
+					final_base_dmg = int(atk_stat * percentage)
+				else:
+					final_base_dmg = base_dmg
+				total_predicted_dmg += final_base_dmg
+				
+	var p_max_hp = GlobalBattleData.get_player_stats().get("total_hp", 100)
+	var current_hp = player_state.hp if player_state else p_max_hp
+	var predicted_hp = current_hp - total_predicted_dmg
+	var is_danger = predicted_hp <= GlobalBattleData.enemy_execution_threshold
+	
+	var e_exec_slot = $PreparePhaseUI.get_node_or_null("EnemyExecutionSlot")
+	var p_hp_bar_fill = $PreparePhaseUI/CharacterArea/PlayerHPBar/Fill
+	var e_exec_label = $PreparePhaseUI.get_node_or_null("EnemyExecutionSlot/Label")
+	
+	if is_danger:
+		if e_exec_slot:
+			e_exec_slot.add_theme_stylebox_override("panel", _make_warning_style())
+		if e_exec_label:
+			e_exec_label.text = "⚠️ 警告: 將觸發斬殺 ( 血量 <= %d )" % GlobalBattleData.enemy_execution_threshold
+			e_exec_label.add_theme_color_override("font_color", Color(1.0, 0.2, 0.2, 1.0))
+			
+		if _hp_warning_tween and _hp_warning_tween.is_valid():
+			_hp_warning_tween.kill()
+		_hp_warning_tween = create_tween().set_loops()
+		_hp_warning_tween.tween_property(p_hp_bar_fill, "color", Color(1.0, 0.0, 0.0, 1.0), 0.5)
+		_hp_warning_tween.tween_property(p_hp_bar_fill, "color", Color(0.8, 0.2, 0.2, 1.0), 0.5)
+	else:
+		if e_exec_slot:
+			e_exec_slot.add_theme_stylebox_override("panel", _make_slot_style(Color(0.4, 0.2, 0.2, 1.0), false, false, false, true))
+		if e_exec_label:
+			e_exec_label.text = "斬殺條件: 目標血量 <= %d" % GlobalBattleData.enemy_execution_threshold
+			e_exec_label.remove_theme_color_override("font_color")
+			
+		if _hp_warning_tween and _hp_warning_tween.is_valid():
+			_hp_warning_tween.kill()
+		if p_hp_bar_fill:
+			p_hp_bar_fill.color = Color(0.2, 0.8, 0.3, 1.0)
+
+
+func _make_slot_style(border_color: Color, is_active: bool, is_first_in_bar: bool, is_last_in_bar: bool, is_first_in_group: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.10, 0.10, 0.20, 1.0) if not is_active else Color(0.08, 0.18, 0.28, 1.0)
+	style.bg_color = Color(0.10, 0.10, 0.20, 1.0) if not is_active else Color(0.15, 0.25, 0.35, 1.0)
 	style.border_color = border_color
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_width_top = 2 if not is_active else 3
-	style.border_width_bottom = 2 if not is_active else 3
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
+	style.border_width_left = 2 if is_first_in_group else 0
+	style.border_width_right = 2 if is_last_in_bar else 0
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	
+	style.corner_radius_top_left = 6 if is_first_in_bar else 0
+	style.corner_radius_bottom_left = 6 if is_first_in_bar else 0
+	style.corner_radius_top_right = 6 if is_last_in_bar else 0
+	style.corner_radius_bottom_right = 6 if is_last_in_bar else 0
 	return style
 
 func _set_player_buttons_enabled(enabled: bool) -> void:
@@ -348,9 +598,43 @@ func _on_start_battle_pressed() -> void:
 	_set_player_buttons_enabled(false)
 	var start_btn = $PreparePhaseUI.get_node_or_null("StartBattleButton")
 	if start_btn: start_btn.disabled = true
+	is_battling = true
 	
 	print("[BattleScene] 戰鬥開始！")
 	await _resolve_battle()
+
+func _spawn_floating_text(msg: String, color: Color, target_pos: Vector2) -> void:
+	var label = Label.new()
+	label.text = msg
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	label.add_theme_font_size_override("font_size", 36)
+	label.position = target_pos + Vector2(0, -50)
+	$PreparePhaseUI.add_child(label)
+	
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 80, 0.8).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(label, "modulate:a", 0.0, 0.8).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+	tween.chain().tween_callback(label.queue_free)
+
+func _play_attack_dash(node: TextureRect, direction: int) -> void:
+	if not node: return
+	var original_x = node.position.x
+	var tween = create_tween()
+	tween.tween_property(node, "position:x", original_x + (30 * direction), 0.1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(node, "position:x", original_x, 0.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+func _play_hit_shake(node: TextureRect) -> void:
+	if not node: return
+	var original_x = node.position.x
+	var tween = create_tween()
+	node.modulate = Color(1.0, 0.3, 0.3, 1.0)
+	for i in range(3):
+		tween.tween_property(node, "position:x", original_x - 15, 0.05)
+		tween.tween_property(node, "position:x", original_x + 15, 0.05)
+	tween.tween_property(node, "position:x", original_x, 0.05)
+	tween.parallel().tween_property(node, "modulate", Color.WHITE, 0.2)
 
 func _interrupt_entity(slots: Array[int], current_turn: int) -> void:
 	slots[current_turn] = SubAction.STUNNED
@@ -374,16 +658,40 @@ func _execute_attack(attacker: BattleEntity, defender: BattleEntity, action: int
 	if not skill_data: return
 	
 	var base_dmg = skill_data.get("damage", 0)
+	var type = skill_data.get("type", "phys_attack")
 	var range_limit = skill_data.get("range_limit", 0)
 	var attack_name = skill_data.get("name", "未知攻擊")
 	
-	if base_dmg <= 0: return 
+	# 屬性連動加成 (以 damage 欄位做為百分比)
+	var attacker_stats = GlobalBattleData.get_player_stats() if is_player else GlobalBattleData.get_enemy_stats()
+	var atk_stat = attacker_stats.get("total_atk", 0)
+	
+	var final_base_dmg = 0
+	if type == "phys_attack" or type == "magic_attack":
+		var percentage = base_dmg * 10.0 / 100.0
+		final_base_dmg = int(atk_stat * percentage)
+	else:
+		final_base_dmg = base_dmg
+		
+	if final_base_dmg <= 0: return 
 	
 	var dist = abs(defender.pos - attacker.pos)
 	print("%s 發動 %s！(距離: %d，範圍: %d)" % [attacker_name, attack_name, dist, range_limit])
 	
+	var attacker_node = $PreparePhaseUI/CharacterArea.get_node_or_null("PlayerSprite") if is_player else $PreparePhaseUI/CharacterArea.get_node_or_null("EnemySprite")
+	var defender_node = $PreparePhaseUI/CharacterArea.get_node_or_null("EnemySprite") if is_player else $PreparePhaseUI/CharacterArea.get_node_or_null("PlayerSprite")
+	var dash_dir = 1 if is_player else -1
+	
+	_play_attack_dash(attacker_node, dash_dir)
+	await get_tree().create_timer(0.15).timeout
+	
+	var defender_center = Vector2(0, 0)
+	if defender_node:
+		defender_center = defender_node.global_position + defender_node.size / 2.0
+	
 	if defender.dodge_rate > 0.0 and randf() < defender.dodge_rate:
 		print("%s 觸發完美閃避！攻擊 Miss！" % defender_name)
+		_spawn_floating_text("Miss!", Color(0.7, 0.7, 0.7), defender_center)
 		attacker.damage_boost = 0
 		attacker.crit_rate = 0.0
 		defender.dodge_rate = 0.0
@@ -391,6 +699,7 @@ func _execute_attack(attacker: BattleEntity, defender: BattleEntity, action: int
 	
 	if dist > range_limit:
 		print("距離太遠，攻擊 Miss！")
+		_spawn_floating_text("Miss!", Color(0.7, 0.7, 0.7), defender_center)
 		attacker.damage_boost = 0
 		attacker.crit_rate = 0.0
 		return
@@ -403,20 +712,29 @@ func _execute_attack(attacker: BattleEntity, defender: BattleEntity, action: int
 	if defender.block_active:
 		dmg_multiplier = max(0.0, 1.0 - defender.block_ratio)
 		print("%s 正在格檔！減免 %d%% 傷害。" % [defender_name, int(defender.block_ratio * 100)])
+		_spawn_floating_text("Block!", Color(0.5, 0.5, 0.8), defender_center + Vector2(0, -30))
 		if defender.block_ratio >= 1.0:
 			defender.damage_boost += 10
 			print("%s 完美格檔！下次增傷 10。" % defender_name)
 		
-	var final_dmg = int((base_dmg + attacker.damage_boost) * dmg_multiplier)
+	var final_dmg = int((final_base_dmg + attacker.damage_boost) * dmg_multiplier)
 	if is_crit:
 		final_dmg = int(final_dmg * 1.5)
 		print("爆擊！")
+		_spawn_floating_text("Crit! %d" % final_dmg, Color(1.0, 0.8, 0.2), defender_center)
+	else:
+		_spawn_floating_text("%d" % final_dmg, Color(1.0, 0.3, 0.3), defender_center)
 		
 	defender.hp = max(0, defender.hp - final_dmg)
+	_play_hit_shake(defender_node)
+	_update_hp_ui()
+	
 	print("%s 命中！造成 %d 傷害。" % [attacker_name, final_dmg])
 	attacker.damage_boost = 0
 	attacker.crit_rate = 0.0
 	defender.dodge_rate = 0.0
+	
+	await get_tree().create_timer(0.4).timeout
 
 func _get_x_from_pos(pos: int) -> float:
 	return 284.25 + (pos - 1) * 150.0
@@ -528,7 +846,10 @@ func _resolve_battle() -> void:
 		player_state.is_chanting = (p_action == SubAction.CHANT)
 		enemy_state.is_chanting = (e_action == SubAction.CHANT)
 		
-		if p_action == SubAction.EXECUTE:
+		if p_action == SubAction.CHANT:
+			var sname = DatabaseManager.get_skill(player_slot_skills[turn_idx])["name"] if DatabaseManager.get_skill(player_slot_skills[turn_idx]) else ""
+			print("玩家 正在詠唱 %s..." % sname)
+		elif p_action == SubAction.EXECUTE:
 			var pd = DatabaseManager.get_skill(player_slot_skills[turn_idx])
 			if pd:
 				if pd.get("is_block", 0) == 1:
@@ -548,7 +869,10 @@ func _resolve_battle() -> void:
 					player_state.dodge_rate += dodge_b
 					print("玩家 獲得閃避機率 %d%%" % int(dodge_b * 100))
 					
-		if e_action == SubAction.EXECUTE:
+		if e_action == SubAction.CHANT:
+			var sname = DatabaseManager.get_skill(enemy_slot_skills[turn_idx])["name"] if DatabaseManager.get_skill(enemy_slot_skills[turn_idx]) else ""
+			print("敵方 正在詠唱 %s..." % sname)
+		elif e_action == SubAction.EXECUTE:
 			var ed = DatabaseManager.get_skill(enemy_slot_skills[turn_idx])
 			if ed:
 				if ed.get("is_block", 0) == 1:
@@ -657,6 +981,7 @@ func _reset_for_next_round() -> void:
 	for i in range(8):
 		player_slots[i] = SubAction.NONE
 		player_slot_skills[i] = ""
+		player_slot_groups[i] = -1
 	player_current_slot = 0
 	player_setup_chant_reduction = 0
 	
@@ -710,4 +1035,6 @@ func _show_battle_result(is_victory: bool, enemy_defeated: bool = true) -> void:
 		if loot_label: loot_label.hide()
 
 func _on_return_button_pressed() -> void:
+	GlobalBattleData.current_hp = player_state.hp
+	GlobalBattleData.is_returning_from_battle = true
 	get_tree().change_scene_to_file(MAIN_SCENE)
