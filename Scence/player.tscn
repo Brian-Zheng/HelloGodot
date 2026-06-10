@@ -18,3 +18,7 @@ texture = ExtResource("1_jjgeo")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1820158330]
 position = Vector2(245, 200)
 shape = SubResource("CapsuleShape2D_pj28q")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(249, 209)
+position_smoothing_enabled = true

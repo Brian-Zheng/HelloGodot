@@ -5,6 +5,16 @@ const SPEED = 300.0
 
 
 var invulnerable := false
+var _map_limits: Rect2 = Rect2(0, 0, 1920, 1080)
+
+func set_camera_limits(rect: Rect2) -> void:
+	_map_limits = rect
+	var cam = get_node_or_null("Camera2D")
+	if cam:
+		cam.limit_left = int(rect.position.x)
+		cam.limit_top = int(rect.position.y)
+		cam.limit_right = int(rect.position.x + rect.size.x)
+		cam.limit_bottom = int(rect.position.y + rect.size.y)
 
 func _ready() -> void:
 	# 加入 "player" 群組，讓 Enemy 可以透過群組找到此節點
@@ -47,13 +57,12 @@ func _physics_process(_delta: float) -> void:
 
 	move_and_slide()
 
-	# 限制玩家不超出畫面邊界 (需考慮 Sprite 的本地偏移)
-	var screen_size = get_viewport_rect().size
+	# 限制玩家不超出地圖邊界 (需考慮 Sprite 的本地偏移)
 	var pad = 60.0
 	var offset_x = $Sprite2D.position.x
 	var offset_y = $Sprite2D.position.y
-	global_position.x = clamp(global_position.x, pad - offset_x, screen_size.x - pad - offset_x)
-	global_position.y = clamp(global_position.y, pad - offset_y, screen_size.y - pad - offset_y)
+	global_position.x = clamp(global_position.x, _map_limits.position.x + pad - offset_x, _map_limits.position.x + _map_limits.size.x - pad - offset_x)
+	global_position.y = clamp(global_position.y, _map_limits.position.y + pad - offset_y, _map_limits.position.y + _map_limits.size.y - pad - offset_y)
 
 	# 根據水平方向翻轉 Sprite2D
 	# input_dir.x > 0 → 往右（不翻轉）

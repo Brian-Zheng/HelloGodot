@@ -6,8 +6,25 @@ func _ready() -> void:
 		if enemy_node:
 			enemy_node.queue_free()
 			
+	_setup_map_limits()
 	_setup_player_hud()
 	_setup_hotkey_hints()
+
+func _setup_map_limits() -> void:
+	var bg = get_node_or_null("GroundLayer")
+	var player = get_node_or_null("Player")
+	if bg and player and bg is TileMapLayer:
+		var used_rect = bg.get_used_rect()
+		var tile_size = bg.tile_set.tile_size if bg.tile_set else Vector2i(64, 64)
+		var pixel_rect = Rect2(
+			used_rect.position.x * tile_size.x,
+			used_rect.position.y * tile_size.y,
+			used_rect.size.x * tile_size.x,
+			used_rect.size.y * tile_size.y
+		)
+		if player.has_method("set_camera_limits"):
+			player.set_camera_limits(pixel_rect)
+
 
 func _setup_player_hud() -> void:
 	GlobalBattleData.init_current_stats_if_needed()
