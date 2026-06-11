@@ -1,5 +1,7 @@
 [gd_scene format=4]
 
+[ext_resource type="Script" uid="uid://dxjcg4g5p82b8" path="res://Scripts/mainscence.gd" id="1_script"]
+
 [ext_resource type="PackedScene" path="res://Scence/player.tscn" id="1_qpi58"]
 [ext_resource type="PackedScene" path="res://Scence/enemy.tscn" id="2_enemy"]
 [ext_resource type="PackedScene" path="res://Scence/enemy_2.tscn" id="4_enemy2"]
@@ -52,8 +54,10 @@ physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_tfyoc")
 
 [node name="Mainscence" type="Node2D" unique_id=673863620]
+script = ExtResource("1_script")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1220740923 instance=ExtResource("1_qpi58")]
+position = Vector2(250, 210)
 up_direction = Vector2(0.9922779, -0.12403474)
 
 [node name="Enemy" type="CharacterBody2D" parent="." unique_id=1551380358 instance=ExtResource("2_enemy")]

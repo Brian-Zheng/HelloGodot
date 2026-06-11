@@ -1,5 +1,9 @@
 extends CharacterBody2D
 
+const TEX_FRONT = preload("res://Images/Characters/ZhongJiuyin/MiniSize/MiniFront.png")
+const TEX_LEFT = preload("res://Images/Characters/ZhongJiuyin/MiniSize/MiniLeft.png")
+const TEX_RIGHT = preload("res://Images/Characters/ZhongJiuyin/MiniSize/MiniRight.png")
+
 ## 角色移動速度（像素/秒）
 const SPEED = 300.0
 
@@ -64,8 +68,14 @@ func _physics_process(_delta: float) -> void:
 	global_position.x = clamp(global_position.x, _map_limits.position.x + pad - offset_x, _map_limits.position.x + _map_limits.size.x - pad - offset_x)
 	global_position.y = clamp(global_position.y, _map_limits.position.y + pad - offset_y, _map_limits.position.y + _map_limits.size.y - pad - offset_y)
 
-	# 根據水平方向翻轉 Sprite2D
-	# input_dir.x > 0 → 往右（不翻轉）
-	# input_dir.x < 0 → 往左（翻轉）
-	if input_dir.x != 0:
-		$Sprite2D.flip_h = input_dir.x < 0
+	# 根據水平方向切換 Sprite2D 圖片
+	if input_dir.x > 0:
+		$Sprite2D.texture = TEX_RIGHT
+		$Sprite2D.flip_h = false
+	elif input_dir.x < 0:
+		$Sprite2D.texture = TEX_LEFT
+		$Sprite2D.flip_h = false
+	elif input_dir.y != 0:
+		$Sprite2D.texture = TEX_FRONT
+	elif input_dir == Vector2.ZERO:
+		$Sprite2D.texture = TEX_FRONT

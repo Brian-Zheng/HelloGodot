@@ -68,7 +68,7 @@ func _build_ui() -> void:
 	image_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	portrait_vbox.add_child(image_container)
 	
-	var portrait_tex = load("res://Images/Characters/character_1.png")
+	var portrait_tex = load("res://Images/Characters/ZhongJiuyin/Frontal.png")
 	if not portrait_tex:
 		portrait_tex = load("res://icon.svg")
 		

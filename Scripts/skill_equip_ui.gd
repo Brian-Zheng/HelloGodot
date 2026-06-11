@@ -244,10 +244,30 @@ func _on_slot_gui_input(event: InputEvent, slot_idx: int) -> void:
 			target_slot_idx = slot_idx
 			popup_unequip.position = get_viewport().get_mouse_position()
 			popup_unequip.popup()
+	elif event is InputEventMouseButton and event.double_click and event.button_index == MOUSE_BUTTON_LEFT:
+		if equipped_skills[slot_idx] != "":
+			equipped_skills[slot_idx] = ""
+			DatabaseManager.save_character_skills("player", equipped_skills)
+			_refresh_ui()
 
 func _on_skill_list_gui_input(event: InputEvent, skill_id: String) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		msg_label.text = "請直接「按住並拖曳」技能到左側格子上來裝備！"
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.double_click:
+			if equipped_skills.has(skill_id):
+				var idx = equipped_skills.find(skill_id)
+				equipped_skills[idx] = ""
+				DatabaseManager.save_character_skills("player", equipped_skills)
+				_refresh_ui()
+			else:
+				var empty_idx = equipped_skills.find("")
+				if empty_idx != -1:
+					equipped_skills[empty_idx] = skill_id
+					DatabaseManager.save_character_skills("player", equipped_skills)
+					_refresh_ui()
+				else:
+					msg_label.text = "技能格已滿！請先卸下其他技能。"
+		elif event.pressed:
+			msg_label.text = "請直接「按住並拖曳」技能到左側格子上來裝備！\n或「左鍵雙擊」快速裝備/卸載。"
 
 func _handle_skill_drop(data: Dictionary, target_slot_idx: int) -> void:
 	msg_label.text = ""

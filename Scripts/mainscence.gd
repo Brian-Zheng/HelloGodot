@@ -67,20 +67,8 @@ func _setup_player_hud() -> void:
 	panel.add_child(hbox)
 	
 	var texture_rect = TextureRect.new()
-	var player_node = get_node_or_null("Player")
-	if player_node:
-		var sprite = player_node.get_node_or_null("Sprite2D")
-		if sprite and sprite.texture:
-			var atlas = AtlasTexture.new()
-			atlas.atlas = sprite.texture
-			
-			# 如果圖片有切分影格 (SpriteSheet)，計算單一影格大小
-			var frame_w = sprite.texture.get_width() / sprite.hframes if "hframes" in sprite else sprite.texture.get_width()
-			var frame_h = sprite.texture.get_height() / sprite.vframes if "vframes" in sprite else sprite.texture.get_height()
-			
-			# 只取上半身 (Y 軸長度除以 2)
-			atlas.region = Rect2(0, 0, frame_w, frame_h * 0.6)
-			texture_rect.texture = atlas
+	var hud_texture = load("res://Images/Characters/ZhongJiuyin/Stickers.png")
+	texture_rect.texture = hud_texture
 			
 	texture_rect.custom_minimum_size = Vector2(85, 85)
 	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

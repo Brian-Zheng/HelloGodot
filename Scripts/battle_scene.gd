@@ -85,9 +85,9 @@ func _ready() -> void:
 	if e_exec_label:
 		e_exec_label.text = "斬殺條件: 目標血量 <= %d" % GlobalBattleData.enemy_execution_threshold
 	
-	if GlobalBattleData.player_texture:
-		var p_sprite = $PreparePhaseUI/CharacterArea.get_node_or_null("PlayerSprite")
-		if p_sprite: p_sprite.texture = GlobalBattleData.player_texture
+	var p_sprite = $PreparePhaseUI/CharacterArea.get_node_or_null("PlayerSprite")
+	if p_sprite: 
+		p_sprite.texture = load("res://Images/Characters/ZhongJiuyin/MiniSize/MiniRight.png")
 	if GlobalBattleData.enemy_texture:
 		var e_sprite = $PreparePhaseUI/CharacterArea.get_node_or_null("EnemySprite")
 		if e_sprite: e_sprite.texture = GlobalBattleData.enemy_texture
