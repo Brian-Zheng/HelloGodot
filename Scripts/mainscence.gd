@@ -54,6 +54,35 @@ func _on_dialog_action(action_name: String) -> void:
 				sprite.texture = player.TEX_FRONT
 			# 久音往下走，大幅度往右靠 (+50)
 			tween.tween_property(player, "global_position", Vector2(player.global_position.x + 50, player.global_position.y + 150), 1.5)
+	elif action_name == "fuzhao_leave":
+		play_fade_transition(func():
+			var fuzhao = get_node_or_null("FuZhao")
+			if fuzhao:
+				fuzhao.queue_free()
+			
+			var story_mgr = get_node_or_null("/root/StoryManager")
+			if story_mgr:
+				story_mgr.current_chapter = 2
+		)
+
+func play_fade_transition(callback: Callable) -> void:
+	var fade_rect = get_node_or_null("TransitionLayer/FadeRect")
+	if not fade_rect:
+		callback.call()
+		return
+		
+	var tween = create_tween()
+	# 畫面漸黑
+	tween.tween_property(fade_rect, "color:a", 1.0, 1.0)
+	
+	# 在黑幕時執行任務 (例如移除角色、切換章節)
+	tween.tween_callback(callback)
+	
+	# 稍微停留黑幕 0.5 秒
+	tween.tween_interval(0.5)
+	
+	# 畫面恢復亮起
+	tween.tween_property(fade_rect, "color:a", 0.0, 1.0)
 
 func _setup_map_limits() -> void:
 	var player = get_node_or_null("Player")

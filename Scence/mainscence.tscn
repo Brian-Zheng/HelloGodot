@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://ujuhqrlww3mr" path="res://Sprite/enemy_2.tscn" id="4_enemy2"]
 [ext_resource type="PackedScene" uid="uid://dng8v7g1m6k4x" path="res://Sprite/guweng.tscn" id="6_guweng_scene"]
 [ext_resource type="PackedScene" path="res://Sprite/fuzhao.tscn" id="7_fuzhao_scene"]
+[ext_resource type="PackedScene" path="res://Sprite/fuyuan.tscn" id="8_fuyuan_scene"]
 
 [node name="Mainscence" type="Node2D" unique_id=673863620]
 script = ExtResource("1_script")
@@ -22,6 +23,9 @@ position = Vector2(1502.2295, 582.56354)
 
 [node name="FuZhao" parent="." unique_id=352360001 instance=ExtResource("7_fuzhao_scene")]
 position = Vector2(2565.624, 789.4298)
+
+[node name="FuYuan" parent="." unique_id=2138293671 instance=ExtResource("8_fuyuan_scene")]
+position = Vector2(844.13873, 1186.2986)
 
 [node name="BackgroundMap" type="Sprite2D" parent="." unique_id=1790954015]
 z_index = -3
@@ -53,3 +57,15 @@ polygon = PackedVector2Array(-72, -416, -122, -380, -122, -96, -221, -22, -226, 
 [node name="CollisionPolygon2D6" type="CollisionPolygon2D" parent="Obstacles" unique_id=1174038376]
 position = Vector2(1331, 731)
 polygon = PackedVector2Array(-2, 22, -45, 90, 1, 159, 86, 159, 112, 96, 78, 22)
+
+[node name="TransitionLayer" type="CanvasLayer" parent="." unique_id=1281494649]
+layer = 100
+
+[node name="FadeRect" type="ColorRect" parent="TransitionLayer" unique_id=999196907]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)

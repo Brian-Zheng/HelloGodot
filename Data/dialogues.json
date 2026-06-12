@@ -9,7 +9,7 @@
       { "speaker": "鍾久音", "text": "（嚇一跳）符昭？怎麼了？", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png", "action": "move_away" },
       { "speaker": "符昭", "text": "（壓低聲音）別聽顧翁嘮叨半天……我過幾日就要去鐵劍門拜師了！", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png" },
       { "speaker": "鍾久音", "text": "（睜大眼睛）真的？你終於決定啦？", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png" },
-      { "speaker": "符昭", "text": "（咧嘴笑）嗯！順道也要去符原那兒採購些行李。一起走吧？", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png" }
+      { "speaker": "符昭", "text": "（咧嘴笑）嗯！順道也要去符原那兒採購些行李。一起走吧？", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png", "end_action": "fuzhao_leave" }
     ],
     "default": [
       { "speaker": "顧翁", "text": "哎呦，這不是久音嗎？", "side": "right", "avatar": "res://Images/Characters/GuWeng/Stickers.png" }
@@ -18,6 +18,16 @@
   "符昭": {
     "default": [
       { "speaker": "符昭", "text": "走吧，我們去符原那兒。", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png" }
+    ]
+  },
+  "符原": {
+    "chapter_2": [
+      { "speaker": "符原", "text": "（推了推眼鏡，攤開布料）這匹靛青棉布耐穿，適合你爹。你娘的話……這藕色綢緞怎麼樣？", "side": "right", "avatar": "res://Images/Characters/FuYuan/Stickers.png" },
+      { "speaker": "鍾久音", "text": "（仔細挑選）就這些吧，符叔叔的眼光肯定沒錯。對了，符昭也要準備遠行了吧！？", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png" },
+      { "speaker": "符原", "text": "（一邊丈量剪布，露出不捨的神情）是啊，鐵劍門啊……年輕人確實該去闖闖。", "side": "right", "avatar": "res://Images/Characters/FuYuan/Stickers.png" }
+    ],
+    "default": [
+      { "speaker": "符原", "text": "年輕人確實該去闖闖。", "side": "right", "avatar": "res://Images/Characters/FuYuan/Stickers.png" }
     ]
   }
 }

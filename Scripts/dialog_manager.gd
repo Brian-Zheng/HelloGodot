@@ -7,6 +7,7 @@ var current_script: Array = []
 var current_index: int = 0
 var is_playing: bool = false
 var is_typing: bool = false
+var _current_end_action: String = ""
 
 @onready var main_container = $Control
 @onready var text_label = $Control/DialogBox/RichTextLabel
@@ -86,6 +87,11 @@ func _show_current_line() -> void:
 	
 	if data.has("action") and data["action"] != "":
 		action_triggered.emit(data["action"])
+		
+	if data.has("end_action") and data["end_action"] != "":
+		_current_end_action = data["end_action"]
+	else:
+		_current_end_action = ""
 
 func _on_type_timer_timeout() -> void:
 	if text_label.visible_characters < text_label.get_total_character_count():
@@ -122,3 +128,6 @@ func _end_dialog() -> void:
 	is_playing = false
 	main_container.hide()
 	dialog_finished.emit()
+	if _current_end_action != "":
+		action_triggered.emit(_current_end_action)
+		_current_end_action = ""
