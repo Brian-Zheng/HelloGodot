@@ -1,24 +1,23 @@
 [gd_scene format=3 uid="uid://x0fqnh3oab0h"]
 
-[ext_resource type="Texture2D" uid="uid://dbqq53c547154" path="res://Images/Characters/ZhongJiuyin/MiniSize/MiniFront.png" id="1_jjgeo"]
+[ext_resource type="Texture2D" uid="uid://cr202ep7v0g5y" path="res://Images/Characters/ZhongJiuyin/MiniSize/MiniFront.png" id="1_jjgeo"]
 [ext_resource type="Script" uid="uid://brxbv51dkc6io" path="res://Scripts/player.gd" id="1_pj28q"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pj28q"]
-radius = 42.0
-height = 146.0
+radius = 16.0
+height = 36.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1220740923]
 script = ExtResource("1_pj28q")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1337892646]
-position = Vector2(0, -60)
-scale = Vector2(1, 1)
+scale = Vector2(0.107, 0.107)
 texture = ExtResource("1_jjgeo")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1820158330]
-position = Vector2(0, 0)
+position = Vector2(0, 50)
+rotation = 1.5708
 shape = SubResource("CapsuleShape2D_pj28q")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(0, 0)
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1745546291]
 position_smoothing_enabled = true

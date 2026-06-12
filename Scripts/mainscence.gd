@@ -10,20 +10,82 @@ func _ready() -> void:
 	_setup_player_hud()
 	_setup_hotkey_hints()
 
+	var dialog_mgr = get_node_or_null("/root/DialogManager")
+	if dialog_mgr and not dialog_mgr.action_triggered.is_connected(_on_dialog_action):
+		dialog_mgr.action_triggered.connect(_on_dialog_action)
+
+func _on_dialog_action(action_name: String) -> void:
+	if action_name == "fuzhao_enter":
+		var fuzhao = get_node_or_null("FuZhao")
+		if fuzhao:
+			if fuzhao.has_method("_set_texture") and fuzhao.texture_left:
+				fuzhao._set_texture(fuzhao.texture_left)
+			var tween = create_tween()
+			# 兩個 90 度轉彎 (直角)，保持恆定速度
+			var speed = 350.0
+			var start_pos = fuzhao.global_position
+			var point1 = Vector2(2100, start_pos.y) # 往左走
+			var point2 = Vector2(2100, 582)         # 往上走 (第一個 90 度轉彎)
+			var point3 = Vector2(1580, 582)         # 往左走 (第二個 90 度轉彎)
+			
+			tween.tween_property(fuzhao, "global_position", point1, start_pos.distance_to(point1) / speed)
+			tween.tween_property(fuzhao, "global_position", point2, point1.distance_to(point2) / speed)
+			tween.tween_property(fuzhao, "global_position", point3, point2.distance_to(point3) / speed)
+			
+			tween.tween_callback(func():
+				if fuzhao.has_method("_set_texture") and fuzhao.get("_texture_front"):
+					fuzhao._set_texture(fuzhao.get("_texture_front"))
+			)
+	elif action_name == "move_away":
+		var fuzhao = get_node_or_null("FuZhao")
+		var player = get_node_or_null("Player")
+		var tween = create_tween()
+		tween.set_parallel(true)
+		
+		if fuzhao:
+			if fuzhao.has_method("_set_texture") and fuzhao.get("_texture_front"):
+				fuzhao._set_texture(fuzhao.get("_texture_front"))
+			# 符昭往下走，大幅度往左靠 (-50)
+			tween.tween_property(fuzhao, "global_position", Vector2(fuzhao.global_position.x - 50, fuzhao.global_position.y + 150), 1.5)
+			
+		if player:
+			var sprite = player.get_node_or_null("Sprite2D")
+			if sprite and "TEX_FRONT" in player:
+				sprite.texture = player.TEX_FRONT
+			# 久音往下走，大幅度往右靠 (+50)
+			tween.tween_property(player, "global_position", Vector2(player.global_position.x + 50, player.global_position.y + 150), 1.5)
+
 func _setup_map_limits() -> void:
-	var bg = get_node_or_null("GroundLayer")
 	var player = get_node_or_null("Player")
-	if bg and player and bg is TileMapLayer:
-		var used_rect = bg.get_used_rect()
-		var tile_size = bg.tile_set.tile_size if bg.tile_set else Vector2i(64, 64)
+	if not player or not player.has_method("set_camera_limits"):
+		return
+		
+	var tile_bg = get_node_or_null("GroundLayer")
+	if tile_bg and tile_bg is TileMapLayer:
+		var used_rect = tile_bg.get_used_rect()
+		var tile_size = tile_bg.tile_set.tile_size if tile_bg.tile_set else Vector2i(64, 64)
 		var pixel_rect = Rect2(
 			used_rect.position.x * tile_size.x,
 			used_rect.position.y * tile_size.y,
 			used_rect.size.x * tile_size.x,
 			used_rect.size.y * tile_size.y
 		)
-		if player.has_method("set_camera_limits"):
-			player.set_camera_limits(pixel_rect)
+		player.set_camera_limits(pixel_rect)
+		return
+		
+	var sprite_bg = get_node_or_null("BackgroundMap")
+	if sprite_bg and sprite_bg is Sprite2D and sprite_bg.texture:
+		var tex_size = sprite_bg.texture.get_size()
+		var bg_scale = sprite_bg.scale
+		var pos = sprite_bg.global_position
+		
+		var rect = Rect2()
+		if sprite_bg.centered:
+			rect = Rect2(pos - (tex_size * bg_scale) / 2.0, tex_size * bg_scale)
+		else:
+			rect = Rect2(pos, tex_size * bg_scale)
+			
+		player.set_camera_limits(rect)
 
 
 func _setup_player_hud() -> void:

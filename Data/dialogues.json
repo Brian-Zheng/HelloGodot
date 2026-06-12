@@ -1,0 +1,23 @@
+{
+  "顧翁": {
+    "chapter_1": [
+      { "speaker": "顧翁", "text": "哎呦，這不是久音嗎？去符原那兒？", "side": "right", "avatar": "res://Images/Characters/GuWeng/Stickers.png" },
+      { "speaker": "鍾久音", "text": "是啊，幫娘和弟弟買些新布料。村子最近還好嗎？", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png" },
+      { "speaker": "顧翁", "text": "寧靜著呢！就是西山偶爾有幾個不長眼的山賊晃蕩……不過別擔心，鐵劍門的弟子巡得勤，上個月還趕跑了一夥人！咱們這兒啊，有他們守著，安心！", "side": "right", "avatar": "res://Images/Characters/GuWeng/Stickers.png" },
+      { "speaker": "鍾久音", "text": "那就好——", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png" },
+      { "speaker": "符昭", "text": "「久音！」顧翁，我倆還有些事，先去忙啦！", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png", "action": "fuzhao_enter" },
+      { "speaker": "鍾久音", "text": "（嚇一跳）符昭？怎麼了？", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png", "action": "move_away" },
+      { "speaker": "符昭", "text": "（壓低聲音）別聽顧翁嘮叨半天……我過幾日就要去鐵劍門拜師了！", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png" },
+      { "speaker": "鍾久音", "text": "（睜大眼睛）真的？你終於決定啦？", "side": "left", "avatar": "res://Images/Characters/ZhongJiuyin/Stickers.png" },
+      { "speaker": "符昭", "text": "（咧嘴笑）嗯！順道也要去符原那兒採購些行李。一起走吧？", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png" }
+    ],
+    "default": [
+      { "speaker": "顧翁", "text": "哎呦，這不是久音嗎？", "side": "right", "avatar": "res://Images/Characters/GuWeng/Stickers.png" }
+    ]
+  },
+  "符昭": {
+    "default": [
+      { "speaker": "符昭", "text": "走吧，我們去符原那兒。", "side": "right", "avatar": "res://Images/Characters/FuZhao/Stickers.png" }
+    ]
+  }
+}

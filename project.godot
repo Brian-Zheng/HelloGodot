@@ -16,6 +16,8 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
+StoryManager="*res://Scripts/story_manager.gd"
+DialogManager="*res://Scence/dialog_ui.tscn"
 
 GlobalBattleData="*res://Scripts/global_battle_data.gd"
 DatabaseManager="*res://Scripts/database_manager.gd"
