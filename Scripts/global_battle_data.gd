@@ -14,6 +14,7 @@ var defeated_enemies: Array[String] = []
 
 var last_player_position: Vector2 = Vector2.ZERO
 var is_returning_from_battle: bool = false
+var target_spawn_position: Vector2 = Vector2.ZERO
 
 var current_hp: int = -1
 var current_mp: int = -1

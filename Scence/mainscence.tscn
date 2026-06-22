@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dng8v7g1m6k4x" path="res://Sprite/guweng.tscn" id="6_guweng_scene"]
 [ext_resource type="PackedScene" path="res://Sprite/fuzhao.tscn" id="7_fuzhao_scene"]
 [ext_resource type="PackedScene" path="res://Sprite/fuyuan.tscn" id="8_fuyuan_scene"]
+[ext_resource type="PackedScene" path="res://Scence/portal.tscn" id="9_portal_scene"]
 
 [node name="Mainscence" type="Node2D" unique_id=673863620]
 script = ExtResource("1_script")
@@ -26,6 +27,9 @@ position = Vector2(2565.624, 789.4298)
 
 [node name="FuYuan" parent="." unique_id=2138293671 instance=ExtResource("8_fuyuan_scene")]
 position = Vector2(844.13873, 1186.2986)
+
+[node name="Portal" parent="." unique_id=102043019 instance=ExtResource("9_portal_scene")]
+position = Vector2(1608.8275, 1616.9514)
 
 [node name="BackgroundMap" type="Sprite2D" parent="." unique_id=1790954015]
 z_index = -3

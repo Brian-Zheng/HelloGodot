@@ -24,7 +24,10 @@ func _ready() -> void:
 	# 加入 "player" 群組，讓 Enemy 可以透過群組找到此節點
 	add_to_group("player")
 	
-	if GlobalBattleData.last_player_position != Vector2.ZERO:
+	if GlobalBattleData.target_spawn_position != Vector2.ZERO:
+		global_position = GlobalBattleData.target_spawn_position
+		GlobalBattleData.target_spawn_position = Vector2.ZERO
+	elif GlobalBattleData.last_player_position != Vector2.ZERO:
 		global_position = GlobalBattleData.last_player_position
 		
 	if GlobalBattleData.is_returning_from_battle:
