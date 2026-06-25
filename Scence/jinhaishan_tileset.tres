@@ -1,0 +1,14 @@
+[gd_resource type="TileSet" load_steps=1 format=2]
+
+[ext_resource type="Texture2D" path="res://Images/Villages/JinhaiShan.png" id=1]
+
+[resource]
+tiles = {
+    0: {
+        "texture": ExtResource(1),
+        "region": Rect2(0, 0, 512, 512),
+        "margin": Rect2(0, 0, 0, 0),
+        "tile_mode": 0,
+        "name": "Background"
+    }
+}
